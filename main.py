@@ -5,16 +5,29 @@ import time
 import re
 
 
-def remove(packages, selects):
+def remove(packages, selects, options):
     print("\n以下的包将会被\033[34m\033[1m卸载\033[0m:")
     for package in packages:
         if package in selects:
-            print("\033[1m\033[34m%s\033[0m" % package, end=" ")
+            print("\033[1m\033[31m%s\033[0m" % package, end=" ")
         else:
-            print("\033[34m%s\033[0m" % package, end=" ")
+            print("\033[31m%s\033[0m" % package, end=" ")
     confirmed = False
-    print()
+
+    for option in options:
+        if option == "-y" or option == "--yes":
+            confirmed = True
+            print("\n按下 Ctrl + C 来阻止卸载")
+            print("\n即将在倒计时结束后卸载:", end="")
+            count_max = 5
+            for i in range(1,count_max + 1):
+                print(" %d" %(count_max + 1 - i), end="", flush=True)
+                time.sleep(1)
+        
+        print()
+
     while not confirmed:
+        print()
         ask = input("允许 IAPM 操作吗? [Y/n] ")
         if ask == "Y" or ask == "y" or ask == "":
             confirmed = True
@@ -37,7 +50,8 @@ def remove(packages, selects):
     return 1
 
 
-def install(packages, selects):
+def install(packages, selects, options):
+    # List packages:
     print("\n以下的包将会被\033[34m\033[1m安装\033[0m:")
     for package in packages:
         if package in selects:
@@ -45,8 +59,18 @@ def install(packages, selects):
         else:
             print("\033[34m%s\033[0m" % package, end=" ")
     confirmed = False
-    print()
+    
+    # Search options:
+    for option in options:
+        if option == "-y" or option == "--yes":
+            confirmed = True
+        
+        print()
+    # End of Search options
+    
+    # Ask            
     while not confirmed:
+        print()
         ask = input("允许 IAPM 操作吗? [Y/n] ")
         if ask == "Y" or ask == "y" or ask == "":
             confirmed = True
@@ -56,6 +80,8 @@ def install(packages, selects):
         else:
             print("\033[33m警告:\033[0m 无法理解")
     print()
+    
+    # Download
     for package in packages:
         spacing = " " * (32 - len(package))
         bar = 16
@@ -67,6 +93,7 @@ def install(packages, selects):
         print()
     print()
 
+    # Install
     print("\n安装软件包:")
     for package in packages:
         spacing = " " * (32 - len(package))
@@ -79,6 +106,7 @@ def install(packages, selects):
         print()
     print()
 
+    # Finished
     print("\n操作完成!")
     return 1
 
@@ -164,11 +192,12 @@ def main():
         print("没有指定操作")
         print("IAPM 0.1 - the \033[34mI\033[0mnstallation/\033[34mI\033[0mnstaller of \033[34mA\033[0mpps, managed by \033[34mP\033[0mLAY OS's \033[34mM\033[0manager")
         print("实现方式简单的软件包管理器")
-        print("用法: iapm <help,install,update,reinstall,remove,clean> <package> --<option>")
-        exit(0)
-        # base_action = "debug" # use on debug
+        print("用法: iapm <help,install,update,remove,clean> <package> --<option>")
+        # exit(0)
+        base_action = "install"
+        select = ['@all']
     if base_action == "help":
-        print("用法: iapm <help,install,update,reinstall,remove,clean> <package> --<option>")
+        print("用法: iapm <help,install,update,remove,clean> <package> --<option>")
         finished = 0
     elif base_action == "install" or base_action == "update" or base_action == "reinstall" or base_action == "remove":
         distro = identify_distro()
@@ -178,13 +207,15 @@ def main():
         print("IAPM 正在准备 \033[1m\033[34m%s\033[0m 软件包..." % base_action, end="")
         packages = get_depends(select)
         print("完成!")
+        if not base_action == "update" and select == ['@all']:
+            print("\n\033[33m警告:\033[0m IAPM 只推荐在更新操作下使用 @all")
         if base_action == "install":
-            finished = install(packages, select)
+            finished = install(packages, select, option)
         if base_action == "remove":
-            finished = remove(packages, select)
+            finished = remove(packages, select, option)
     else:
         print("\033[31m错误:\033[0m 操作不正确")
-        print("可用操作: help, install, update, reinstall, remove, clean")
+        print("可用操作: help, install, update, remove, clean")
         finished = 0
 
     try:
@@ -193,8 +224,9 @@ def main():
         exit(1)
 
 
-reposdir = "/home/play/Desktop/IAPMProject/repos/"
-bindir = "~/Desktop/bin/"  # DEBUGING ONLY
+databasedir = "/home/play/workspace/IAPM/database_test/"
+reposdir = "/home/play/workspace/IAPM/repos_test/"
+bindir = "~/Desktop/bin/"  # TEST INSTALL ONLY
 
 if __name__ == "__main__":
     try:
