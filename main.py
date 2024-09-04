@@ -12,8 +12,10 @@ def remove(packages, selects, options):
             print("\033[1m\033[31m%s\033[0m" % package, end=" ")
         else:
             print("\033[31m%s\033[0m" % package, end=" ")
+        if package == "iapm":
+            iapm_dangerous = True
     confirmed = False
-
+    
     for option in options:
         if option == "-y" or option == "--yes":
             confirmed = True
@@ -23,15 +25,27 @@ def remove(packages, selects, options):
             for i in range(1,count_max + 1):
                 print(" %d" %(count_max + 1 - i), end="", flush=True)
                 time.sleep(1)
+        if iapm_dangerous:
+            try:
+                with open('/etc/iapm.conf', 'r') as conf:
+                    content = conf.read()
+                    if option == "--force" and "IKnowWhatImDoing" in content:
+                        iapm_dangerous = False
+            except: pass
         
         print()
-
+    try:
+        if iapm_dangerous:
+            print('\n\033[33m警告:\033[0m 极端危险的操作\nIAPM 拒绝卸载软件包 "iapm"，如果这是您系统唯一的软件包管理器，则该操作将导致您很难处理软件包\nIAPM 仍然尊重您的操作，如果您仍要不计后果，请在 /etc/iapm.conf 添加 "IKnowWhatAmDoing" 并使用 --force 选项继续')
+            return 0
+    except: pass
+    
     while not confirmed:
         print()
-        ask = input("允许 IAPM 操作吗? [Y/n] ")
-        if ask == "Y" or ask == "y" or ask == "":
+        ask = input("允许 IAPM 操作吗? [y/N] ")
+        if ask == "Y" or ask == "y":
             confirmed = True
-        elif ask == "N" or ask == "n":
+        elif ask == "N" or ask == "n" or ask == "":
             print("操作终止")
             exit()
         else:
@@ -162,7 +176,7 @@ def get_depends(packages):
 
 
 def identify_distro():
-    print("发行版: ", end="")
+    print("\n发行版: ", end="")
     # distro = platform.linux_distribution()
     distro = os.popen("lsb_release -i").read().strip()
     distro = distro.split(" ")[1][4:]
@@ -182,8 +196,6 @@ def main():
                     option.append(sys.argv[i])
                 else:
                     select.append(sys.argv[i])
-            if option:
-                print(option)
         except:
             select = None
         if not select:
