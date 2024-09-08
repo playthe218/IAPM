@@ -65,14 +65,14 @@ def remove(packages, selects, options):
 
 
 def install(packages, selects, options):
-     # Search options:
+    confirmed = False
+    # Search options:
     for option in options:
         if option == "-y" or option == "--yes":
             confirmed = True
         if option == "--no-depends":
             print("\033[33m警告:\033[0m IAPM 强烈不建议跳过依赖处理")
             packages = selects
-        print()
     # End of Search options
     
     # List packages:
@@ -85,8 +85,8 @@ def install(packages, selects, options):
             print("\033[1m\033[34m%s\033[0m" % package, end=" ")
         else:
             print("\033[34m%s\033[0m" % package, end=" ")
-    confirmed = False
     
+    print()
     # Ask            
     while not confirmed:
         print()
@@ -109,6 +109,7 @@ def install(packages, selects, options):
             emptybar = "-" * (bar - i)
             print("\r{}{}[{}{}]".format(package, spacing, finishbar, emptybar), end="")
             time.sleep(random.randint(1, 5) / 10)
+        os.system("scp %s/%s.iap %s"%(dwfrom, package, tmpdir))
         print()
     print()
 
@@ -123,6 +124,9 @@ def install(packages, selects, options):
             print("\r{}{}[{}{}]".format(package, spacing, finishbar, emptybar), end="")
             time.sleep(random.randint(5, 50) / 1000)
         print()
+        os.system("mkdir %s/%s"%(tmpdir, package))
+        os.system("tar xf %s/%s.iap --directory=%s/"%(tmpdir, package, tmpdir))
+        os.system("cp -r %s/%s/install/* %s/"%(tmpdir, package, rootdir))
     print()
 
     # Finished
@@ -243,7 +247,9 @@ def main():
 
 databasedir = "/home/play/workspace/IAPM/database_test/"
 reposdir = "/home/play/Desktop/workspace/IAPM/repos_test/"
-bindir = "~/Desktop/bin/"  # TEST INSTALL ONLY
+dwfrom = "/home/play/Downloads/"
+rootdir = "/home/play/Desktop/fakeroot/"  # TEST INSTALL ONLY
+tmpdir = "/home/play/Desktop/iapm_tmp"
 
 if __name__ == "__main__":
     try:
