@@ -27,6 +27,7 @@ depends={}
 
 [fastfetch]
 depends={"glibc", "yyjson"}
+ver=2.23.0
 
 [yyjson]
 depends={"glibc"}
