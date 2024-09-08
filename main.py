@@ -65,7 +65,20 @@ def remove(packages, selects, options):
 
 
 def install(packages, selects, options):
+     # Search options:
+    for option in options:
+        if option == "-y" or option == "--yes":
+            confirmed = True
+        if option == "--no-depends":
+            print("\033[33m警告:\033[0m IAPM 强烈不建议跳过依赖处理")
+            packages = selects
+        print()
+    # End of Search options
+    
     # List packages:
+    if packages == []:
+        print("\n没有软件包会被操作")
+        return 1
     print("\n以下的包将会被\033[34m\033[1m安装\033[0m:")
     for package in packages:
         if package in selects:
@@ -73,14 +86,6 @@ def install(packages, selects, options):
         else:
             print("\033[34m%s\033[0m" % package, end=" ")
     confirmed = False
-    
-    # Search options:
-    for option in options:
-        if option == "-y" or option == "--yes":
-            confirmed = True
-        
-        print()
-    # End of Search options
     
     # Ask            
     while not confirmed:
@@ -205,9 +210,9 @@ def main():
         print("IAPM 0.1 - the \033[34mI\033[0mnstallation/\033[34mI\033[0mnstaller of \033[34mA\033[0mpps, managed by \033[34mP\033[0mLAY OS's \033[34mM\033[0manager")
         print("实现方式简单的软件包管理器")
         print("用法: iapm <help,install,update,remove,clean> <package> --<option>")
-        # exit(0)
-        base_action = "install"
-        select = ['@all']
+        exit(0)
+        # base_action = "install"
+        # select = ['@all']
     if base_action == "help":
         print("用法: iapm <help,install,update,remove,clean> <package> --<option>")
         finished = 0
@@ -237,7 +242,7 @@ def main():
 
 
 databasedir = "/home/play/workspace/IAPM/database_test/"
-reposdir = "/home/play/workspace/IAPM/repos_test/"
+reposdir = "/home/play/Desktop/workspace/IAPM/repos_test/"
 bindir = "~/Desktop/bin/"  # TEST INSTALL ONLY
 
 if __name__ == "__main__":

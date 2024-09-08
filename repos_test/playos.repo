@@ -24,3 +24,9 @@ depends={"iana-etc"}
 
 [iana-etc]
 depends={}
+
+[fastfetch]
+depends={"glibc", "yyjson"}
+
+[yyjson]
+depends={"glibc"}
