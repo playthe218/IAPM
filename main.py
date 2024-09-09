@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 import random
 import sys
@@ -6,6 +8,27 @@ import re
 
 
 def remove(packages, selects, options):
+    for option in options:
+        if option == "--no-depends":
+            packages = selects  
+        if option == "-y" or option == "--yes":
+            confirmed = True
+            print("\n按下 Ctrl + C 来阻止卸载")
+            print("\n即将在倒计时结束后卸载:", end="")
+            count_max = 5
+            for i in range(1,count_max + 1):
+                print(" %d" %(count_max + 1 - i), end="", flush=True)
+                time.sleep(1)
+        try:
+            if iapm_dangerous:
+                try:
+                    with open('/etc/iapm.conf', 'r') as conf:
+                        content = conf.read()
+                        if option == "--force" and "IKnowWhatImDoing" in content:
+                            iapm_dangerous = False
+                except: pass
+        except: pass
+        
     print("\n以下的包将会被\033[34m\033[1m卸载\033[0m:")
     for package in packages:
         if package in selects:
@@ -16,24 +39,7 @@ def remove(packages, selects, options):
             iapm_dangerous = True
     confirmed = False
     
-    for option in options:
-        if option == "-y" or option == "--yes":
-            confirmed = True
-            print("\n按下 Ctrl + C 来阻止卸载")
-            print("\n即将在倒计时结束后卸载:", end="")
-            count_max = 5
-            for i in range(1,count_max + 1):
-                print(" %d" %(count_max + 1 - i), end="", flush=True)
-                time.sleep(1)
-        if iapm_dangerous:
-            try:
-                with open('/etc/iapm.conf', 'r') as conf:
-                    content = conf.read()
-                    if option == "--force" and "IKnowWhatImDoing" in content:
-                        iapm_dangerous = False
-            except: pass
-        
-        print()
+    print()
     try:
         if iapm_dangerous:
             print('\n\033[33m警告:\033[0m 极端危险的操作\nIAPM 拒绝卸载软件包 "iapm"，如果这是您系统唯一的软件包管理器，则该操作将导致您很难处理软件包\nIAPM 仍然尊重您的操作，如果您仍要不计后果，请在 /etc/iapm.conf 添加 "IKnowWhatAmDoing" 并使用 --force 选项继续')
@@ -60,6 +66,20 @@ def remove(packages, selects, options):
             print("\r{}{}[{}{}]".format(package, spacing, finishbar, emptybar), end="")
             time.sleep(random.randint(5, 50) / 1000)
         print()
+        
+        with open("%s/%s.info"%(databasedir, package), 'r') as info:
+            info_contents = info.readlines()
+        
+        info_contents.append('\n')
+        remove = []
+        for line in info_contents:
+            line = line.strip()
+            if "installation_file" in line:
+                files = line.split("installation_file=")[1].strip()
+                remove.append(files)
+        for file in remove:
+            os.system("rm -rf %s/%s"%(rootdir, file))
+        os.system("rm -rf %s/%s.info"%(databasedir, package))
     print("\n操作完成!")
     return 1
 
@@ -127,6 +147,8 @@ def install(packages, selects, options):
         os.system("mkdir %s/%s"%(tmpdir, package))
         os.system("tar xf %s/%s.iap --directory=%s/"%(tmpdir, package, tmpdir))
         os.system("cp -r %s/%s/install/* %s/"%(tmpdir, package, rootdir))
+        os.system("cp %s/%s/%s.info %s/%s.info"%(tmpdir, package, package, databasedir, package))
+        
     print()
 
     # Finished
@@ -245,14 +267,18 @@ def main():
         exit(1)
 
 
-databasedir = "/home/play/workspace/IAPM/database_test/"
+databasedir = "/home/play/Desktop/workspace/IAPM/database_test/"
 reposdir = "/home/play/Desktop/workspace/IAPM/repos_test/"
 dwfrom = "/home/play/Downloads/"
-rootdir = "/home/play/Desktop/fakeroot/"  # TEST INSTALL ONLY
+rootdir = "/"
+#rootdir = "/home/play/Desktop/fakeroot/"  # TEST INSTALL ONLY
 tmpdir = "/home/play/Desktop/iapm_tmp"
 
 if __name__ == "__main__":
     try:
-        main()
+        if os.getuid() == 0:
+            main()
+        else:
+            print("\n\033[31m错误:\033[0m 需要 root 权限来执行") 
     except KeyboardInterrupt:
         print("\n\033[31m错误:\033[0m 中止信号")
