@@ -1,3 +1,4 @@
+# 测试解析依赖关系用的罢了...有的依赖树都不完整吧
 [iapm]
 depends={'python'}
 
@@ -19,15 +20,12 @@ depends={}
 [tadata]
 depends={}
 
-[filesystem]
-depends={"iana-etc"}
-
 [iana-etc]
 depends={}
 
 [fastfetch]
 depends={"glibc", "yyjson"}
-ver=2.23.0
+ver=2.23.1
 
 [yyjson]
 depends={"glibc"}

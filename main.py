@@ -8,6 +8,8 @@ import re
 
 
 def remove(packages, selects, options):
+    confirmed = False
+    
     for option in options:
         if option == "--no-depends":
             packages = selects  
@@ -19,15 +21,6 @@ def remove(packages, selects, options):
             for i in range(1,count_max + 1):
                 print(" %d" %(count_max + 1 - i), end="", flush=True)
                 time.sleep(1)
-        try:
-            if iapm_dangerous:
-                try:
-                    with open('/etc/iapm.conf', 'r') as conf:
-                        content = conf.read()
-                        if option == "--force" and "IKnowWhatImDoing" in content:
-                            iapm_dangerous = False
-                except: pass
-        except: pass
         
     print("\n以下的包将会被\033[34m\033[1m卸载\033[0m:")
     for package in packages:
@@ -37,9 +30,18 @@ def remove(packages, selects, options):
             print("\033[31m%s\033[0m" % package, end=" ")
         if package == "iapm":
             iapm_dangerous = True
-    confirmed = False
     
-    print()
+    try:
+        if iapm_dangerous:
+            try:
+                with open('/etc/iapm.conf', 'r') as conf:
+                    content = conf.read()
+                    if option == "--force" and "IKnowWhatImDoing" in content:
+                        iapm_dangerous = False
+            except: pass
+    except: pass
+    
+    print()                     
     try:
         if iapm_dangerous:
             print('\n\033[33m警告:\033[0m 极端危险的操作\nIAPM 拒绝卸载软件包 "iapm"，如果这是您系统唯一的软件包管理器，则该操作将导致您很难处理软件包\nIAPM 仍然尊重您的操作，如果您仍要不计后果，请在 /etc/iapm.conf 添加 "IKnowWhatAmDoing" 并使用 --force 选项继续')
@@ -78,8 +80,8 @@ def remove(packages, selects, options):
                 files = line.split("installation_file=")[1].strip()
                 remove.append(files)
         for file in remove:
-            os.system("rm -rf %s/%s"%(rootdir, file))
-        os.system("rm -rf %s/%s.info"%(databasedir, package))
+            os.system("rm -rvf %s/%s"%(rootdir, file))
+        os.system("rm -rvf %s/%s.info"%(databasedir, package))
     print("\n操作完成!")
     return 1
 
@@ -99,12 +101,14 @@ def install(packages, selects, options):
     if packages == []:
         print("\n没有软件包会被操作")
         return 1
-    print("\n以下的包将会被\033[34m\033[1m安装\033[0m:")
+    package_list = ""
     for package in packages:
         if package in selects:
-            print("\033[1m\033[34m%s\033[0m" % package, end=" ")
+            package_list = package_list + "\033[1m\033[34m%s\033[0m "%(package)
         else:
-            print("\033[34m%s\033[0m" % package, end=" ")
+            package_list = package_list + "\033[34m%s\033[0m "%(package)
+    print("\n以下的包将会被\033[34m\033[1m安装\033[0m:")
+    print("%s"%(package_list))
     
     print()
     # Ask            
@@ -248,7 +252,7 @@ def main():
             print("\033[31m错误:\033[0m 没有软件包被选定")
             exit()
         print("IAPM 正在准备 \033[1m\033[34m%s\033[0m 软件包..." % base_action, end="")
-        packages = get_depends(select)
+        packages = get_depends(select)                  
         print("完成!")
         if not base_action == "update" and select == ['@all']:
             print("\n\033[33m警告:\033[0m IAPM 只推荐在更新操作下使用 @all")
@@ -270,13 +274,13 @@ def main():
 databasedir = "/home/play/Desktop/workspace/IAPM/database_test/"
 reposdir = "/home/play/Desktop/workspace/IAPM/repos_test/"
 dwfrom = "/home/play/Downloads/"
-rootdir = "/"
-#rootdir = "/home/play/Desktop/fakeroot/"  # TEST INSTALL ONLY
+#rootdir = "/"
+rootdir = "/home/play/Desktop/fakeroot/"  # TEST INSTALL ONLY
 tmpdir = "/home/play/Desktop/iapm_tmp"
 
 if __name__ == "__main__":
     try:
-        if os.getuid() == 0:
+        if True: #os.getuid() == 0:
             main()
         else:
             print("\n\033[31m错误:\033[0m 需要 root 权限来执行") 

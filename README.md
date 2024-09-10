@@ -1,9 +1,12 @@
 # IAPM
-the Installation/Installer of Apps, managed by PLAY OS's Manager
+一个简易的未完成的软件包管理器
 
-目前只有install是真实实现，remove为模拟实现，争取2025年1月末前把所有功能做出真实实现
+现在只有两个操作"install"和"remove"已经完成
 计划：
-完成update和remove模拟实现
-完成update和remove真实实现
-完成剩余功能模拟实现（同时#1）
-完成剩余功能真实实现（同时#1）
+（可能吧）把不同操作中可能重复的代码段提取成函数
+将install操作和remove操作的虚假进度条替换为真的
+完成update操作的模拟执行
+令update操作真实
+...
+
+真的有人来看这个突发奇想写的烂东西吗
