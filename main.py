@@ -237,8 +237,8 @@ def main():
             select = None
     except:
         print("没有指定操作")
-        print("IAPM 0.1 - the \033[34mI\033[0mnstallation/\033[34mI\033[0mnstaller of \033[34mA\033[0mpps, managed by \033[34mP\033[0mLAY OS's \033[34mM\033[0manager")
-        print("实现方式简单的软件包管理器")
+        print("IAPM 0.1")
+        print("简易 简陋 未完成的软件包管理器")
         print("用法: iapm <help,install,update,remove,clean> <package> --<option>")
         exit(0)
         # base_action = "install"
