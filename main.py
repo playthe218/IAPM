@@ -238,7 +238,7 @@ def main():
     except:
         print("没有指定操作")
         print("IAPM 0.1")
-        print("简易 简陋 未完成的软件包管理器")
+        print("简易 简陋 不完整 未完成的软件包管理器")
         print("用法: iapm <help,install,update,remove,clean> <package> --<option>")
         exit(0)
         # base_action = "install"
