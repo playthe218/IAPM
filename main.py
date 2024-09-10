@@ -271,16 +271,16 @@ def main():
         exit(1)
 
 
-databasedir = "/home/play/Desktop/workspace/IAPM/database_test/"
-reposdir = "/home/play/Desktop/workspace/IAPM/repos_test/"
-dwfrom = "/home/play/Downloads/"
-#rootdir = "/"
-rootdir = "/home/play/Desktop/fakeroot/"  # TEST INSTALL ONLY
-tmpdir = "/home/play/Desktop/iapm_tmp"
+databasedir = "/home/play/Desktop/workspace/IAPM/database_test/" # 手工设置好
+reposdir = "/home/play/Desktop/workspace/IAPM/repos_test/" # 手工设置好
+dwfrom = "/home/play/Downloads/"            # 手工设置好
+rootdir = "/"
+# rootdir = "/home/play/Desktop/fakeroot/"  # TEST INSTALL ONLY
+tmpdir = "/home/play/Desktop/iapm_tmp" # 手工设置好
 
 if __name__ == "__main__":
     try:
-        if True: #os.getuid() == 0:
+        if os.getuid() == 0:
             main()
         else:
             print("\n\033[31m错误:\033[0m 需要 root 权限来执行") 
