@@ -6,6 +6,125 @@ import sys
 import time
 import re
 
+def list_packages(packages, selects, action):
+    if action == "remove":
+        color = "\033[31m"
+    else:
+        color = "\033[34m"
+    normal = "\033[0m"
+    for package in packages:
+        if package in selects:
+            print("\033[1m%s%s%s "%(color, package, normal), end="")
+        else:
+            print("%s%s%s "%(color, package, normal), end="")
+
+def update_check():
+    # 初始化一个包含所有软件包VERCOMPARE的字典
+    vercompare_dict = {}
+
+    # 遍历reposdir目录下的所有repo文件
+    for repo_file_name in os.listdir(reposdir):
+        if repo_file_name.endswith('.repo'):
+            repo_file_path = os.path.join(reposdir, repo_file_name)
+            with open(repo_file_path, 'r') as file:
+                current_section = None
+                for line in file:
+                    line = line.strip()
+                    if line.startswith('[') and line.endswith(']'):
+                        current_section = line[1:-1]
+                        vercompare_dict[current_section] = {'vercompare': 0}
+                    elif '=' in line:
+                        key, value = line.split('=', 1)
+                        value = value.replace("'", "").replace('{', '').replace('}', '')
+                        if key == 'vercompare':
+                            vercompare_dict[current_section]['vercompare'] = int(value)
+
+    # 读取info文件内容并比较版本
+    info_files = [f for f in os.listdir(databasedir) if f.endswith('.info')]
+    for info_file in info_files:
+        file_path = os.path.join(databasedir, info_file)
+        with open(file_path, 'r') as file:
+            for line in file:
+                line = line.strip()
+                if line.startswith('name='):
+                    package_name = line[5:]
+                elif line.startswith('ver='):
+                    package_version = line[4:]
+                elif line.startswith('vercompare='):
+                    info_data = {'version': package_version, 'vercompare': int(line[11:])}
+                    if package_name in vercompare_dict and vercompare_dict[package_name]['vercompare'] < info_data['vercompare']:
+                        # If vercompare in info is greater than repo, it's an update
+                        vercompare_dict[package_name]['update'] = 'update1'
+                    elif package_name in vercompare_dict and vercompare_dict[package_name]['vercompare'] != info_data['vercompare']:
+                        # If vercompare in info is different and greater than repo, it might be an update
+                        vercompare_dict[package_name]['update'] = 'update_maybe'
+
+    # 收集需要更新的软件包
+    updates = [pkg for pkg, data in vercompare_dict.items() if 'update' in data and data['update'] in ['update1', 'update_maybe']]
+
+    return updates
+
+def update(packages, selects, options):   
+    confirmed = False
+    # Search options:
+    for option in options:
+        if option == "-y" or option == "--yes":
+            confirmed = True
+    # End of Search options
+    
+    # List packages:
+    if packages == []:
+        print("\n没有软件包会被操作")
+        return 1
+    
+    print("\n以下的包将会被\033[34m\033[1m更新\033[0m:")
+    list_packages(packages, selects, "update")
+    
+    print()
+    # Ask            
+    while not confirmed:
+        print()
+        ask = input("允许 IAPM 操作吗? [Y/n] ")
+        if ask == "Y" or ask == "y" or ask == "":
+            confirmed = True
+        elif ask == "N" or ask == "n":
+            print("操作终止")
+            exit()
+        else:
+            print("\033[33m警告:\033[0m 无法理解")
+    print()
+    
+    # Download
+    for package in packages:
+        spacing = " " * (32 - len(package))
+        bar = 16
+        for i in range(bar + 1):
+            finishbar = "|" * i
+            emptybar = "-" * (bar - i)
+            print("\r{}{}[{}{}]".format(package, spacing, finishbar, emptybar), end="")
+            time.sleep(random.randint(1, 5) / 10)
+        # os.system("scp %s/%s.iap %s"%(dwfrom, package, tmpdir))
+        print()
+
+    # Install
+    print("\n安装软件包:")
+    for package in packages:
+        spacing = " " * (32 - len(package))
+        bar = 16
+        for i in range(bar + 1):
+            finishbar = "|" * i
+            emptybar = "-" * (bar - i)
+            print("\r{}{}[{}{}]".format(package, spacing, finishbar, emptybar), end="")
+            time.sleep(random.randint(5, 50) / 1000)
+        print()
+        #os.system("mkdir %s/%s"%(tmpdir, package))
+        #os.system("tar xf %s/%s.iap --directory=%s/"%(tmpdir, package, tmpdir))
+        #os.system("cp -r %s/%s/install/* %s/"%(tmpdir, package, rootdir))
+        #os.system("cp %s/%s/%s.info %s/%s.info"%(tmpdir, package, package, databasedir, package))
+
+    # Finished
+    print("\n操作完成!")
+    return 0
 
 def remove(packages, selects, options):
     confirmed = False
@@ -23,13 +142,10 @@ def remove(packages, selects, options):
                 time.sleep(1)
         
     print("\n以下的包将会被\033[34m\033[1m卸载\033[0m:")
-    for package in packages:
-        if package in selects:
-            print("\033[1m\033[31m%s\033[0m" % package, end=" ")
-        else:
-            print("\033[31m%s\033[0m" % package, end=" ")
-        if package == "iapm":
-            iapm_dangerous = True
+    list_packages(packages, selects, "remove")
+    
+    if "iapm" in packages:
+        iapm_dangerous = True
     
     try:
         if iapm_dangerous:
@@ -83,7 +199,7 @@ def remove(packages, selects, options):
             os.system("rm -rvf %s/%s"%(rootdir, file))
         os.system("rm -rvf %s/%s.info"%(databasedir, package))
     print("\n操作完成!")
-    return 1
+    return 0
 
 
 def install(packages, selects, options):
@@ -101,14 +217,9 @@ def install(packages, selects, options):
     if packages == []:
         print("\n没有软件包会被操作")
         return 1
-    package_list = ""
-    for package in packages:
-        if package in selects:
-            package_list = package_list + "\033[1m\033[34m%s\033[0m "%(package)
-        else:
-            package_list = package_list + "\033[34m%s\033[0m "%(package)
+    
     print("\n以下的包将会被\033[34m\033[1m安装\033[0m:")
-    print("%s"%(package_list))
+    list_packages(packages, selects, "install")
     
     print()
     # Ask            
@@ -135,7 +246,6 @@ def install(packages, selects, options):
             time.sleep(random.randint(1, 5) / 10)
         os.system("scp %s/%s.iap %s"%(dwfrom, package, tmpdir))
         print()
-    print()
 
     # Install
     print("\n安装软件包:")
@@ -153,33 +263,32 @@ def install(packages, selects, options):
         os.system("cp -r %s/%s/install/* %s/"%(tmpdir, package, rootdir))
         os.system("cp %s/%s/%s.info %s/%s.info"%(tmpdir, package, package, databasedir, package))
         
-    print()
-
     # Finished
     print("\n操作完成!")
-    return 1
+    return 0
 
 
-def parse_repo_file(repo_file):
+def parse_repo_file(repo_file, get):
     """
     解析一个 .repo 文件，返回一个字典，表示每个包及其依赖关系
     """
     dependencies = {}
-    with open(repo_file, 'r') as f:
+    with open(repo_file, 'r') as repo:
         current_package = None
-        for line in f:
+        for line in repo:
             line = line.strip()
-            if line.startswith('[') and line.endswith(']'):
-                # 读取包名
-                current_package = line[1:-1].strip()
-                dependencies[current_package] = set()
-            elif line.startswith('depends='):
-                # 提取依赖关系
-                match = re.search(r'depends=\{(.*?)\}', line)
-                if match:
-                    deps = match.group(1).replace("'", "").replace('"', "").split(',')
-                    dependencies[current_package].update(dep.strip() for dep in deps if dep.strip())
-    return dependencies
+            if get == "depends":    
+                if line.startswith('[') and line.endswith(']'):
+                    # 读取包名
+                    current_package = line[1:-1].strip()
+                    dependencies[current_package] = set()
+                elif line.startswith('depends='):
+                    # 提取依赖关系
+                    match = re.search(r'depends=\{(.*?)\}', line)
+                    if match:
+                        deps = match.group(1).replace("'", "").replace('"', "").split(',')
+                        dependencies[current_package].update(dep.strip() for dep in deps if dep.strip())
+            return dependencies
 
 def get_depends(packages):
     """
@@ -192,7 +301,7 @@ def get_depends(packages):
     for file in os.listdir(reposdir):
         if file.endswith('.repo'):
             repo_file_path = os.path.join(reposdir, file)
-            dependencies = parse_repo_file(repo_file_path)
+            dependencies = parse_repo_file(repo_file_path, "depends")
             all_dependencies.update(dependencies)
 
     # 存储最终结果
@@ -233,33 +342,45 @@ def main():
                     select.append(sys.argv[i])
         except:
             select = None
+            option = []
         if not select:
             select = None
+        if not option:
+            option = []
     except:
         print("没有指定操作")
         print("IAPM 0.1")
         print("简易 简陋 不完整 未完成的软件包管理器")
         print("用法: iapm <help,install,update,remove,clean> <package> --<option>")
-        exit(0)
-        # base_action = "install"
-        # select = ['@all']
+        # exit(0)
+        base_action = "update"
+        select = ['@all']
+        option = []
+    
     if base_action == "help":
         print("用法: iapm <help,install,update,remove,clean> <package> --<option>")
         finished = 0
+    
     elif base_action == "install" or base_action == "update" or base_action == "reinstall" or base_action == "remove":
         distro = identify_distro()
         if select is None:
             print("\033[31m错误:\033[0m 没有软件包被选定")
             exit()
         print("IAPM 正在准备 \033[1m\033[34m%s\033[0m 软件包..." % base_action, end="")
-        packages = get_depends(select)                  
+        if base_action != "update":
+            packages = get_depends(select)
+        if base_action == "update" and select == ['@all']:
+            packages = update_check()
         print("完成!")
+        
         if not base_action == "update" and select == ['@all']:
             print("\n\033[33m警告:\033[0m IAPM 只推荐在更新操作下使用 @all")
         if base_action == "install":
             finished = install(packages, select, option)
         if base_action == "remove":
             finished = remove(packages, select, option)
+        if base_action == "update":
+            finished = update(packages, packages, option)
     else:
         print("\033[31m错误:\033[0m 操作不正确")
         print("可用操作: help, install, update, remove, clean")
@@ -280,7 +401,7 @@ tmpdir = "/home/play/Desktop/iapm_tmp" # 手工设置好
 
 if __name__ == "__main__":
     try:
-        if os.getuid() == 0:
+        if True: #os.getuid() == 0:
             main()
         else:
             print("\n\033[31m错误:\033[0m 需要 root 权限来执行") 

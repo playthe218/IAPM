@@ -1,6 +1,9 @@
 # 测试解析依赖关系用的罢了...有的依赖树都不完整吧
+# 谁知道要不要推翻这个结构呢
 [iapm]
 depends={'python'}
+ver=0.1.2
+vercompare=000102
 
 [python]
 depends={'bzip2', 'expat', 'gdbm', 'libffi', 'libnsl', 'libxcrypt', 'openssl', 'zlib', 'tzdata', 'mpdecimal'}
@@ -26,6 +29,7 @@ depends={}
 [fastfetch]
 depends={"glibc", "yyjson"}
 ver=2.23.1
+vercompare=022301
 
 [yyjson]
 depends={"glibc"}
