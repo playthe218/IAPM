@@ -103,7 +103,7 @@ def update(packages, selects, options):
             emptybar = "-" * (bar - i)
             print("\r{}{}[{}{}]".format(package, spacing, finishbar, emptybar), end="")
             time.sleep(random.randint(1, 5) / 10)
-        # os.system("scp %s/%s.iap %s"%(dwfrom, package, tmpdir))
+        os.system("scp %s/%s.iap %s"%(dwfrom, package, tmpdir))
         print()
 
     # Install
@@ -117,10 +117,11 @@ def update(packages, selects, options):
             print("\r{}{}[{}{}]".format(package, spacing, finishbar, emptybar), end="")
             time.sleep(random.randint(5, 50) / 1000)
         print()
-        #os.system("mkdir %s/%s"%(tmpdir, package))
-        #os.system("tar xf %s/%s.iap --directory=%s/"%(tmpdir, package, tmpdir))
-        #os.system("cp -r %s/%s/install/* %s/"%(tmpdir, package, rootdir))
-        #os.system("cp %s/%s/%s.info %s/%s.info"%(tmpdir, package, package, databasedir, package))
+        os.system("mkdir %s/%s"%(tmpdir, package))
+        os.system("tar xf %s/%s.iap --directory=%s/"%(tmpdir, package, tmpdir))
+        os.system("cp -r %s/%s/install/* %s/"%(tmpdir, package, rootdir))
+        os.system("cp %s/%s/%s.info %s/%s.info"%(tmpdir, package, package, databasedir, package))
+        os.system("rm -rf %s/%s"%(tmpdir, package))
 
     # Finished
     print("\n操作完成!")
@@ -134,12 +135,6 @@ def remove(packages, selects, options):
             packages = selects  
         if option == "-y" or option == "--yes":
             confirmed = True
-            print("\n按下 Ctrl + C 来阻止卸载")
-            print("\n即将在倒计时结束后卸载:", end="")
-            count_max = 5
-            for i in range(1,count_max + 1):
-                print(" %d" %(count_max + 1 - i), end="", flush=True)
-                time.sleep(1)
         
     print("\n以下的包将会被\033[34m\033[1m卸载\033[0m:")
     list_packages(packages, selects, "remove")
@@ -164,6 +159,13 @@ def remove(packages, selects, options):
             return 0
     except: pass
     
+    if confirmed:
+        print("\n按下 Ctrl + C 来阻止卸载")
+        print("\n即将在倒计时结束后卸载:", end="")
+        count_max = 5
+        for i in range(1,count_max + 1):
+            print(" %d" %(count_max + 1 - i), end="", flush=True)
+            time.sleep(1)
     while not confirmed:
         print()
         ask = input("允许 IAPM 操作吗? [y/N] ")
@@ -196,8 +198,8 @@ def remove(packages, selects, options):
                 files = line.split("installation_file=")[1].strip()
                 remove.append(files)
         for file in remove:
-            os.system("rm -rvf %s/%s"%(rootdir, file))
-        os.system("rm -rvf %s/%s.info"%(databasedir, package))
+            os.system("rm -rf %s/%s"%(rootdir, file))
+        os.system("rm -rf %s/%s.info"%(databasedir, package))
     print("\n操作完成!")
     return 0
 
@@ -237,15 +239,16 @@ def install(packages, selects, options):
     
     # Download
     for package in packages:
-        spacing = " " * (32 - len(package))
-        bar = 16
-        for i in range(bar + 1):
-            finishbar = "|" * i
-            emptybar = "-" * (bar - i)
-            print("\r{}{}[{}{}]".format(package, spacing, finishbar, emptybar), end="")
-            time.sleep(random.randint(1, 5) / 10)
-        os.system("scp %s/%s.iap %s"%(dwfrom, package, tmpdir))
-        print()
+        if not os.path.exists("%s/%s.iap" % (tmpdir, package)):
+            spacing = " " * (32 - len(package))
+            bar = 16
+            for i in range(bar + 1):
+                finishbar = "|" * i
+                emptybar = "-" * (bar - i)
+                print("\r{}{}[{}{}]".format(package, spacing, finishbar, emptybar), end="")
+                time.sleep(random.randint(1, 5) / 10)
+            os.system("scp %s/%s.iap %s"%(dwfrom, package, tmpdir))
+            print()
 
     # Install
     print("\n安装软件包:")
@@ -262,6 +265,7 @@ def install(packages, selects, options):
         os.system("tar xf %s/%s.iap --directory=%s/"%(tmpdir, package, tmpdir))
         os.system("cp -r %s/%s/install/* %s/"%(tmpdir, package, rootdir))
         os.system("cp %s/%s/%s.info %s/%s.info"%(tmpdir, package, package, databasedir, package))
+        os.system("rm -rf %s/%s"%(tmpdir, package))
         
     # Finished
     print("\n操作完成!")
@@ -288,7 +292,7 @@ def parse_repo_file(repo_file, get):
                     if match:
                         deps = match.group(1).replace("'", "").replace('"', "").split(',')
                         dependencies[current_package].update(dep.strip() for dep in deps if dep.strip())
-            return dependencies
+    return dependencies
 
 def get_depends(packages):
     """
@@ -352,21 +356,22 @@ def main():
         print("IAPM 0.1")
         print("简易 简陋 不完整 未完成的软件包管理器")
         print("用法: iapm <help,install,update,remove,clean> <package> --<option>")
-        # exit(0)
-        base_action = "update"
-        select = ['@all']
+        exit(0)     # 需要debug时注释掉，然后改下面的变量决定要调试的功能
+        base_action = "install"
+        select = ['fastfetch']
         option = []
     
     if base_action == "help":
         print("用法: iapm <help,install,update,remove,clean> <package> --<option>")
         finished = 0
     
-    elif base_action == "install" or base_action == "update" or base_action == "reinstall" or base_action == "remove":
+    elif base_action == "install" or base_action == "update" or base_action == "cleans" or base_action == "remove":
         distro = identify_distro()
         if select is None:
             print("\033[31m错误:\033[0m 没有软件包被选定")
             exit()
-        print("IAPM 正在准备 \033[1m\033[34m%s\033[0m 软件包..." % base_action, end="")
+        
+        print("准备 \033[1m\033[34m%s\033[0m ..." % base_action, end="")
         if base_action != "update":
             packages = get_depends(select)
         if base_action == "update" and select == ['@all']:
@@ -381,23 +386,30 @@ def main():
             finished = remove(packages, select, option)
         if base_action == "update":
             finished = update(packages, packages, option)
+        
     else:
         print("\033[31m错误:\033[0m 操作不正确")
         print("可用操作: help, install, update, remove, clean")
         finished = 0
 
-    try:
-        exit(finished)
-    except:
-        exit(1)
+    exit(finished)
 
+config = {}
+with open("/etc/iapm.conf", 'r') as conf:
+    for line in conf:
+        line = line.strip()
+        if line and not line.startswith('#'):
+            if '=' in line:
+                key, value = line.split('=', 1)
+                key = key.replace('_', '')
+                config[key] = value.strip()
 
-databasedir = "/home/play/Desktop/workspace/IAPM/database_test/" # 手工设置好
-reposdir = "/home/play/Desktop/workspace/IAPM/repos_test/" # 手工设置好
-dwfrom = "/home/play/Downloads/"            # 手工设置好
-rootdir = "/"
-# rootdir = "/home/play/Desktop/fakeroot/"  # TEST INSTALL ONLY
-tmpdir = "/home/play/Desktop/iapm_tmp" # 手工设置好
+rootdir = config.get('rootdir', '/')
+dwfrom = config.get('downloadfrom', '/home/play/Desktop/iapm_downloadfrom/')
+reposdir = config.get('reposdir', '/var/db/iapm/repos')
+tmpdir = config.get('cachedir', '/var/cache/iapm/')
+databasedir = config.get('databasedir', '/var/db/iapm/database')
+# print(rootdir, dwfrom, reposdir, tmpdir, databasedir) # 在确认是否正确时取消注释
 
 if __name__ == "__main__":
     try:

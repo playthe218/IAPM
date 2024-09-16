@@ -1,26 +1,34 @@
-# 测试解析依赖关系用的罢了...有的依赖树都不完整吧
-# 谁知道要不要推翻这个结构呢
 [iapm]
 depends={'python'}
-ver=0.1.2
-vercompare=000102
+ver=0.4
+vercompare=00040000
 
 [python]
 depends={'bzip2', 'expat', 'gdbm', 'libffi', 'libnsl', 'libxcrypt', 'openssl', 'zlib', 'tzdata', 'mpdecimal'}
+ver=3.12.6-1
+vercompare=03120600
 
 [bzip2]
 depends={'glibc', 'bash'}
+ver=1.0.8-6
+vercompare=01000806
 
 [expat]
 depends={'glibc'}
+ver=2.6.3-2
+vercompare=02060302
 
 [glibc]
 depends={"linux-api-headers", "tzdata", "filesystem"}
+ver=2.40
+vercompare=02400000
 
 [linux-api-headers]
 depends={}
+ver=6.10-1
+vercompare=06100001
 
-[tadata]
+[tzdata]
 depends={}
 
 [iana-etc]
@@ -28,8 +36,10 @@ depends={}
 
 [fastfetch]
 depends={"glibc", "yyjson"}
-ver=2.23.1
-vercompare=022301
+ver=2.24.0-1
+vercompare=02240001
 
 [yyjson]
 depends={"glibc"}
+ver=0.10.0-1
+vercompare=00100001
