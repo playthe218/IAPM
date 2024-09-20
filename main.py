@@ -155,13 +155,13 @@ def remove(packages, selects, options):
     print()                     
     try:
         if iapm_dangerous:
-            print('\n\033[33m警告:\033[0m 极端危险的操作\nIAPM 拒绝卸载软件包 "iapm"，如果这是您系统唯一的软件包管理器，则该操作将导致您很难处理软件包\nIAPM 仍然尊重您的操作，如果您仍要不计后果，请在 /etc/iapm.conf 添加 "IKnowWhatAmDoing" 并使用 --force 选项继续')
+            print('\n\033[33m警告:\033[0m 极端危险的操作\nIAPM 拒绝移除软件包 "iapm"，如果这是您系统唯一的软件包管理器，则该操作将导致您难以处理软件包\n如要不计后果，请在 /etc/iapm.conf 添加 "IKnowWhatAmDoing" 并使用 --force 选项继续')
             return 0
     except: pass
     
     if confirmed:
-        print("\n按下 Ctrl + C 来阻止卸载")
-        print("\n即将在倒计时结束后卸载:", end="")
+        print("\n按下 Ctrl + C 来阻止移除")
+        print("\n即将在倒计时结束后移除:", end="")
         count_max = 5
         for i in range(1,count_max + 1):
             print(" %d" %(count_max + 1 - i), end="", flush=True)
@@ -176,7 +176,7 @@ def remove(packages, selects, options):
             exit()
         else:
             print("\033[33m警告:\033[0m 无法理解")
-    print("\n卸载软件包:")
+    print("\n移除软件包:")
     for package in packages:
         spacing = " " * (32 - len(package))
         bar = 16
@@ -413,7 +413,7 @@ databasedir = config.get('databasedir', '/var/db/iapm/database')
 
 if __name__ == "__main__":
     try:
-        if True: #os.getuid() == 0:
+        if os.getuid() == 0:
             main()
         else:
             print("\n\033[31m错误:\033[0m 需要 root 权限来执行") 
