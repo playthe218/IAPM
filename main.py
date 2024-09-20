@@ -136,7 +136,7 @@ def remove(packages, selects, options):
         if option == "-y" or option == "--yes":
             confirmed = True
         
-    print("\n以下的包将会被\033[34m\033[1m卸载\033[0m:")
+    print("\n以下的包将会被\033[34m\033[1m移除\033[0m:")
     list_packages(packages, selects, "remove")
     
     if "iapm" in packages:

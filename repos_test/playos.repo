@@ -1,3 +1,6 @@
+[core]
+depends={'gcc-libs', 'glibc', 'bash', 'coreutils', 'file', 'findutils', 'gawk', 'grep', 'procps-ng', 'sed', 'tar', 'gettext', 'pciutils', 'psmisc'}
+
 [iapm]
 depends={'python'}
 ver=0.4
