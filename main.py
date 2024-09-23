@@ -64,6 +64,16 @@ def update_check():
 
     return updates
 
+def clean():
+    rm_cachedir = input("要清理 IAPM 缓存吗? [Y/n] ")
+    if rm_cachedir == "y" or rm_cachedir == "Y":
+        os.system("rm -rf /var/cache/iapm/*")
+    else: pass
+    
+    print("操作完成!")
+    
+    return 0
+
 def update(packages, selects, options):   
     confirmed = False
     # Search options:
@@ -131,11 +141,11 @@ def remove(packages, selects, options):
     confirmed = False
     
     for option in options:
-        if option == "--no-depends":
-            packages = selects  
         if option == "-y" or option == "--yes":
             confirmed = True
-        
+    
+    packages = selects
+    
     print("\n以下的包将会被\033[34m\033[1m移除\033[0m:")
     list_packages(packages, selects, "remove")
     
@@ -353,9 +363,7 @@ def main():
             option = []
     except:
         print("没有指定操作")
-        print("IAPM 0.1")
-        print("简易 简陋 不完整 未完成的软件包管理器")
-        print("用法: iapm <help,install,update,remove,clean> <package> --<option>")
+        print("用法: iapm <help,install,update,remove,clean,version> <package> --<option>")
         exit(0)     # 需要debug时注释掉，然后改下面的变量决定要调试的功能
         base_action = "install"
         select = ['fastfetch']
@@ -364,6 +372,15 @@ def main():
     if base_action == "help":
         print("用法: iapm <help,install,update,remove,clean> <package> --<option>")
         finished = 0
+    
+    elif base_action == "version":
+        print("  ______")
+        print(" /|    |\\   IAPM 0.1")
+        print("/ |____| \\  简易 不完整 未完成的软件包管理器")
+        finished = 0
+
+    elif base_action == "clean":
+        finished = clean()
     
     elif base_action == "install" or base_action == "update" or base_action == "cleans" or base_action == "remove":
         distro = identify_distro()
