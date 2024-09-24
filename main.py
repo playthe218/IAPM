@@ -342,7 +342,7 @@ def identify_distro():
     return distro
 
 
-def main():
+def main(root):
     # 获取基本行为和选定软件包与选项
     try:
         base_action = sys.argv[1]
@@ -362,15 +362,20 @@ def main():
         if not option:
             option = []
     except:
-        print("没有指定操作")
-        print("用法: iapm <help,install,update,remove,clean,version> <package> --<option>")
+        print("没有指定操作 (使用 help 获取参数)")
         exit(0)     # 需要debug时注释掉，然后改下面的变量决定要调试的功能
         base_action = "install"
         select = ['fastfetch']
         option = []
+        print("该 IAPM 处于调试状态。")
     
     if base_action == "help":
-        print("用法: iapm <help,install,update,remove,clean> <package> --<option>")
+        print("\033[1miapm \033[34mhelp")
+        print("     \033[34mversion")
+        print("     \033[34minstall \033[32m<packages> \033[33m<options>")
+        print("     \033[34mupdate \033[32m<@all/pkg> \033[33m<options>")
+        print("     \033[34mremove \033[32m<packages> \033[33m<options>")
+        print("     \033[34mclean")
         finished = 0
     
     elif base_action == "version":
@@ -380,29 +385,37 @@ def main():
         finished = 0
 
     elif base_action == "clean":
-        finished = clean()
+        if root:
+            finished = clean()
+        else: 
+            print("\033[31m错误:\033[0m 需要 root 来执行")
+            finished = 0
     
     elif base_action == "install" or base_action == "update" or base_action == "cleans" or base_action == "remove":
-        distro = identify_distro()
-        if select is None:
-            print("\033[31m错误:\033[0m 没有软件包被选定")
-            exit()
-        
-        print("准备 \033[1m\033[34m%s\033[0m ..." % base_action, end="")
-        if base_action != "update":
-            packages = get_depends(select)
-        if base_action == "update" and select == ['@all']:
-            packages = update_check()
-        print("完成!")
-        
-        if not base_action == "update" and select == ['@all']:
-            print("\n\033[33m警告:\033[0m IAPM 只推荐在更新操作下使用 @all")
-        if base_action == "install":
-            finished = install(packages, select, option)
-        if base_action == "remove":
-            finished = remove(packages, select, option)
-        if base_action == "update":
-            finished = update(packages, packages, option)
+        if root:
+            distro = identify_distro()
+            if select is None:
+                print("\033[31m错误:\033[0m 没有软件包被选定")
+                exit()
+            
+            print("准备 \033[1m\033[34m%s\033[0m ..." % base_action, end="")
+            if base_action != "update":
+                packages = get_depends(select)
+            if base_action == "update" and select == ['@all']:
+                packages = update_check()
+            print("完成!")
+            
+            if not base_action == "update" and select == ['@all']:
+                print("\n\033[33m警告:\033[0m IAPM 只推荐在更新操作下使用 @all")
+            if base_action == "install":
+                finished = install(packages, select, option)
+            if base_action == "remove":
+                finished = remove(packages, select, option)
+            if base_action == "update":
+                finished = update(packages, packages, option)
+        else: 
+            print("\033[31m错误:\033[0m 需要 root 来执行")
+            finished = 0 
         
     else:
         print("\033[31m错误:\033[0m 操作不正确")
@@ -431,8 +444,8 @@ databasedir = config.get('databasedir', '/var/db/iapm/database')
 if __name__ == "__main__":
     try:
         if os.getuid() == 0:
-            main()
+            main(True)
         else:
-            print("\n\033[31m错误:\033[0m 需要 root 权限来执行") 
+            main(False)
     except KeyboardInterrupt:
         print("\n\033[31m错误:\033[0m 中止信号")
