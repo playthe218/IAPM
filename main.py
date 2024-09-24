@@ -163,7 +163,7 @@ def remove(packages, selects, options):
     print()                     
     try:
         if iapm_dangerous:
-            print('\n\033[33m警告:\033[0m 极端危险的操作\nIAPM 拒绝移除软件包 "iapm"，如果这是您系统唯一的软件包管理器，则该操作将导致您难以处理软件包\n如要不计后果，请在 /etc/iapm.conf 添加 "IKnowWhatAmDoing" 并使用 --force 选项继续')
+            print('\n\033[33m警告:\033[0m 极端危险的操作\nIAPM 拒绝移除软件包 "iapm"，如果这是您系统唯一的软件包管理器，则该操作将导致您难以处理软件包\n如要不计后果，请在 /etc/iapm.conf 添加 "IKnowWhatmDoing" 并使用 --force 选项继续')
             return 0
     except: pass
     
