@@ -144,8 +144,6 @@ def remove(packages, selects, options):
         if option == "-y" or option == "--yes":
             confirmed = True
     
-    packages = selects
-    
     print("\n以下的包将会被\033[34m\033[1m移除\033[0m:")
     list_packages(packages, selects, "remove")
     
@@ -410,7 +408,7 @@ def main(root):
             if base_action == "install":
                 finished = install(packages, select, option)
             if base_action == "remove":
-                finished = remove(packages, select, option)
+                finished = remove(select, select, option)
             if base_action == "update":
                 finished = update(packages, packages, option)
         else: 
