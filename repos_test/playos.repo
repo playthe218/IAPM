@@ -22,7 +22,7 @@ ver=2.6.3-2
 vercompare=02060302
 
 [glibc]
-depends={"linux-api-headers", "tzdata", "filesystem"}
+depends={"linux-api-headers", "tzdata", "osinfo"}
 ver=2.40
 vercompare=02400000
 
@@ -46,3 +46,8 @@ vercompare=02240001
 depends={"glibc"}
 ver=0.10.0-1
 vercompare=00100001
+
+[networkmanager]
+depends={"audit", "curl", "gcc-libs", "glib2", "glibc", "iproute2", "jansson", "libmm-glib", "libndp", "libnewt", "libnm", "libpsl", "libteam", "mobile-broadband-provider-info", "nspr", "nss", "readline", "systemd-libs", "wpa_supplicant"}
+ver=1.48.10-1
+vercompare=01481001

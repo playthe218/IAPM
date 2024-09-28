@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import os
-import random
 import sys
 import time
 import re
@@ -132,27 +131,14 @@ def update(packages, selects, options):
     
     # Download
     for package in packages:
-        spacing = " " * (32 - len(package))
-        bar = 16
-        for i in range(bar + 1):
-            finishbar = "|" * i
-            emptybar = "-" * (bar - i)
-            print("\r{}{}[{}{}]".format(package, spacing, finishbar, emptybar), end="")
-            time.sleep(random.randint(1, 5) / 10)
+        print(package)
         os.system("scp %s/%s.iap %s"%(dwfrom, package, tmpdir))
         print()
 
     # Install
     print("\n安装软件包:")
     for package in packages:
-        spacing = " " * (32 - len(package))
-        bar = 16
-        for i in range(bar + 1):
-            finishbar = "|" * i
-            emptybar = "-" * (bar - i)
-            print("\r{}{}[{}{}]".format(package, spacing, finishbar, emptybar), end="")
-            time.sleep(random.randint(5, 50) / 1000)
-        print()
+        print(package)
         os.system("mkdir %s/%s"%(tmpdir, package))
         os.system("tar xf %s/%s.iap --directory=%s"%(tmpdir, package, tmpdir))
         os.system("%s/%s/do_pre/*" % (tmpdir, package))
@@ -214,14 +200,7 @@ def remove(packages, selects, options):
             print("\033[33m警告:\033[0m 无法理解")
     print("\n移除软件包:")
     for package in packages:
-        spacing = " " * (32 - len(package))
-        bar = 16
-        for i in range(bar + 1):
-            finishbar = "|" * i
-            emptybar = "-" * (bar - i)
-            print("\r{}{}[{}{}]".format(package, spacing, finishbar, emptybar), end="")
-            time.sleep(random.randint(5, 50) / 1000)
-        print()
+        print(package)
         
         with open("%s/%s.info"%(databasedir, package), 'r') as info:
             info_contents = info.readlines()
@@ -286,27 +265,14 @@ def install(packages, selects, options):
     # Download
     for package in packages:
         if not os.path.exists("%s/%s.iap" % (tmpdir, package)):
-            spacing = " " * (32 - len(package))
-            bar = 16
-            for i in range(bar + 1):
-                finishbar = "|" * i
-                emptybar = "-" * (bar - i)
-                print("\r{}{}[{}{}]".format(package, spacing, finishbar, emptybar), end="")
-                time.sleep(random.randint(1, 5) / 10)
+            print(package)
             os.system("scp %s/%s.iap %s"%(dwfrom, package, tmpdir))
             print()
 
     # Install
     print("\n安装软件包:")
     for package in packages:
-        spacing = " " * (32 - len(package))
-        bar = 16
-        for i in range(bar + 1):
-            finishbar = "|" * i
-            emptybar = "-" * (bar - i)
-            print("\r{}{}[{}{}]".format(package, spacing, finishbar, emptybar), end="")
-            time.sleep(random.randint(5, 50) / 1000)
-        print()
+        print(package)
         os.system("mkdir %s/%s"%(tmpdir, package))
         os.system("tar xf %s/%s.iap --directory=%s"%(tmpdir, package, tmpdir))
         os.system("%s/%s/do_pre/*" % (tmpdir, package))
@@ -416,8 +382,8 @@ def main(root):
     
     elif base_action == "version":
         print("  ______")
-        print(" /|    |\\   IAPM 0.1")
-        print("/ |____| \\  简易 不完整 未完成的软件包管理器")
+        print(" /|    |\\   IAPM 0.89")
+        print("/ |____| \\  简陋的软件包管理器")
         finished = 0
 
     elif base_action == "clean":
@@ -472,7 +438,7 @@ with open("/etc/iapm.conf", 'r') as conf:
                 config[key] = value.strip()
 
 rootdir = config.get('rootdir', '/')
-dwfrom = config.get('downloadfrom', '')
+dwfrom = config.get('downloadfrom', '/home/play/Desktop/iapm_downloadfrom')
 reposdir = config.get('reposdir', '/var/db/iapm/repos')
 tmpdir = config.get('cachedir', '/var/cache/iapm/')
 databasedir = config.get('databasedir', '/var/db/iapm/database')
