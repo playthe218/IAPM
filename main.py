@@ -1,10 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import random
 import sys
 import time
 import re
+import gettext
+_ = gettext.gettext
 
 def clean_exists(packages, select):
     exists = []
@@ -24,7 +26,7 @@ def clean_exists(packages, select):
         if package in select_set:
             if package in exists_set:
                 # 如果package在exists中且在select中
-                print("\033[33m注意:\033[0m 软件包 %s 将被重新安装" % package)
+                print(_("\033[33mATTENTION:\033[0m The package \033[32m%s\033[0m will be \033[34m\033[1mreinstalled\033[0m." % package))
             else:
                 continue
         if package in exists_set and not package in select_set:
@@ -91,12 +93,12 @@ def update_check():
     return updates
 
 def clean():
-    rm_cachedir = input("要清理 IAPM 缓存吗? [Y/n] ")
+    rm_cachedir = input(_("Clean up IAPM cache? [Y/n] "))
     if rm_cachedir == "y" or rm_cachedir == "Y":
         os.system("rm -rf /var/cache/iapm/*")
     else: pass
     
-    print("操作完成!")
+    print(_("Operation completed!"))
     
     return 0
 
@@ -110,24 +112,24 @@ def update(packages, selects, options):
     
     # List packages:
     if packages == []:
-        print("\n没有软件包会被操作")
+        print(_("\nNo packages will be operated."))
         return 1
     
-    print("\n以下的包将会被\033[34m\033[1m更新\033[0m:")
+    print(_("\nThese packages will be \033[34m\033[1mupdated\033[0m:"))
     list_packages(packages, selects, "update")
     
     print()
     # Ask            
     while not confirmed:
         print()
-        ask = input("允许 IAPM 操作吗? [Y/n] ")
+        ask = input(_("Allow IAPM to operate? [Y/n] "))
         if ask == "Y" or ask == "y" or ask == "":
             confirmed = True
         elif ask == "N" or ask == "n":
-            print("操作终止")
+            print(_("Operation aborted."))
             exit()
         else:
-            print("\033[33m警告:\033[0m 无法理解")
+            print(_("\033[33mWARNING:\033[0m Can not understand."))
     print()
     
     # Download
@@ -143,7 +145,7 @@ def update(packages, selects, options):
         print()
 
     # Install
-    print("\n安装软件包:")
+    print(_("\nInstalling packages:"))
     for package in packages:
         spacing = " " * (32 - len(package))
         bar = 16
@@ -162,7 +164,7 @@ def update(packages, selects, options):
         os.system("rm -rf %s/%s"%(tmpdir, package))
         
     # Finished
-    print("\n操作完成!")
+    print(_("\nOperation completed!"))
     return 0
 
 def remove(packages, selects, options):
@@ -172,7 +174,7 @@ def remove(packages, selects, options):
         if option == "-y" or option == "--yes":
             confirmed = True
     
-    print("\n以下的包将会被\033[34m\033[1m移除\033[0m:")
+    print(_("\nThese packages will be \033[34m\033[1mremoved\033[0m:"))
     list_packages(packages, selects, "remove")
     
     if "iapm" in packages:
@@ -191,28 +193,29 @@ def remove(packages, selects, options):
     print()                     
     try:
         if iapm_dangerous:
-            print('\n\033[33m警告:\033[0m 极端危险的操作\nIAPM 拒绝移除软件包 "iapm"，如果这是您系统唯一的软件包管理器，则该操作将导致您难以处理软件包\n如要不计后果，请在 /etc/iapm.conf 添加 "IKnowWhatmDoing" 并使用 --force 选项继续')
+            print(_('\n\033[33mWARNING:\033[0m The operation is VERY DANGER\nIAPM rufused to remove the package "iapm". If IAPM is the only package manager on your system, this will make it difficult to manage the packages\nIf you STILL want to continue, please add "IKnowWhatImDoing" to /etc/iapm.conf and continue with option "--force"'))
+            print(_("Opetation aborted."))
             return 0
     except: pass
     
     if confirmed:
-        print("\n按下 Ctrl + C 来阻止移除")
-        print("\n即将在倒计时结束后移除:", end="")
+        print(_("\nPress Ctrl + C to stop removing."))
+        print(_("\nRemoving in:", end=""))
         count_max = 5
         for i in range(1,count_max + 1):
             print(" %d" %(count_max + 1 - i), end="", flush=True)
             time.sleep(1)
     while not confirmed:
         print()
-        ask = input("允许 IAPM 操作吗? [y/N] ")
+        ask = input(_("Allow IAPM to operate? [y/N] "))
         if ask == "Y" or ask == "y":
             confirmed = True
         elif ask == "N" or ask == "n" or ask == "":
-            print("操作终止")
+            print("O")
             exit()
         else:
-            print("\033[33m警告:\033[0m 无法理解")
-    print("\n移除软件包:")
+            print(_("\033[33mWARNING:\033[0m Can not understand."))
+    print(_("\nRemoving packages:"))
     for package in packages:
         spacing = " " * (32 - len(package))
         bar = 16
@@ -246,7 +249,7 @@ def remove(packages, selects, options):
             os.system(post_remove)
         except: pass
         os.system("rm -rf %s/%s.info"%(databasedir, package))
-    print("\n操作完成!")
+    print(_("\nOperation completed!"))
     return 0
 
 
@@ -257,30 +260,30 @@ def install(packages, selects, options):
         if option == "-y" or option == "--yes":
             confirmed = True
         if option == "--no-depends":
-            print("\033[33m警告:\033[0m IAPM 强烈不建议跳过依赖处理")
+            print(_("\033[33mWARNING:\033[0m Skipping dependency handling is not recommended."))
             packages = selects
     # End of Search options
     
     # List packages:
     if packages == []:
-        print("\n没有软件包会被操作")
+        print(_("\nNo package will be operated."))
         return 1
     
-    print("\n以下的包将会被\033[34m\033[1m安装\033[0m:")
+    print(_("\nThese packages will be \033[34m\033[1minstalled\033[0m:"))
     list_packages(packages, selects, "install")
     
     print()
     # Ask            
     while not confirmed:
         print()
-        ask = input("允许 IAPM 操作吗? [Y/n] ")
+        ask = input(_("Allow IAPM to operate? [Y/n] "))
         if ask == "Y" or ask == "y" or ask == "":
             confirmed = True
         elif ask == "N" or ask == "n":
-            print("操作终止")
+            print(_("Operation aborted."))
             exit()
         else:
-            print("\033[33m警告:\033[0m 无法理解")
+            print(_("\033[33mWARNING:\033[0m Can not understand"))
     print()
     
     # Download
@@ -297,7 +300,7 @@ def install(packages, selects, options):
             print()
 
     # Install
-    print("\n安装软件包:")
+    print(_("\nInstalling packages:"))
     for package in packages:
         spacing = " " * (32 - len(package))
         bar = 16
@@ -316,7 +319,7 @@ def install(packages, selects, options):
         os.system("rm -rf %s/%s"%(tmpdir, package))
         
     # Finished
-    print("\n操作完成!")
+    print(_("\nOperation completed!"))
     return 0
 
 
@@ -371,7 +374,7 @@ def get_depends(packages):
     return list(result)
 
 def identify_distro():
-    print("\n发行版: ", end="")
+    print(_("\nDistro: "), end="")
     # distro = platform.linux_distribution()
     distro = os.popen("lsb_release -i").read().strip()
     distro = distro.split(" ")[1][4:]
@@ -398,12 +401,12 @@ def main(root):
         if not option:
             option = []
     except:
-        print("没有指定操作 (使用 help 获取参数)")
-        #exit(0)     # 需要debug时注释掉，然后改下面的变量决定要调试的功能
+        print(_('No action. (Get help with action "help")'))
+        exit(0)     # 需要debug时注释掉，然后改下面的变量决定要调试的功能
         base_action = "install"
         select = ['fastfetch']
         option = []
-        print("该 IAPM 处于调试状态。")
+        print("The IAPM is debugging.")
     
     if base_action == "help":
         print("\033[1miapm \033[34mhelp")
@@ -416,33 +419,33 @@ def main(root):
     
     elif base_action == "version":
         print("  ______")
-        print(" /|    |\\   IAPM 0.1")
-        print("/ |____| \\  简易 不完整 未完成的软件包管理器")
+        print(" /|    |\\   IAPM 1.0")
+        print(_("/ |____| \\  A simple package manager"))
         finished = 0
 
     elif base_action == "clean":
         if root:
             finished = clean()
         else: 
-            print("\033[31m错误:\033[0m 需要 root 来执行")
+            print(_("\033[31mERROR:\033[0m Must run as root."))
             finished = 0
     
     elif base_action == "install" or base_action == "update" or base_action == "cleans" or base_action == "remove":
         if root:
             distro = identify_distro()
             if select is None:
-                print("\033[31m错误:\033[0m 没有软件包被选定")
+                print(_("\033[31mERROR:\033[0m No package is selected."))
                 exit()
             
-            print("准备 \033[1m\033[34m%s\033[0m ..." % base_action, end="")
+            print(_("Preparing to \033[1m\033[34m%s\033[0m ...") % base_action, end="")
             if base_action != "update":
                 packages = get_depends(select)
             if base_action == "update" and select == ['@all']:
                 packages = update_check()
-            print("完成!")
+            print(_("OK!"))
             
             if not base_action == "update" and select == ['@all']:
-                print("\n\033[33m警告:\033[0m IAPM 只推荐在更新操作下使用 @all")
+                print(_('\n\033[33mERROR:\033[0m @all only can be used with action "update".'))
             if base_action == "install":
                 packages = clean_exists(packages, select)
                 finished = install(packages, select, option)
@@ -451,12 +454,12 @@ def main(root):
             if base_action == "update":
                 finished = update(packages, packages, option)
         else: 
-            print("\033[31m错误:\033[0m 需要 root 来执行")
+            print(_("\033[31mERROR:\033[0m Must run as root."))
             finished = 0 
         
     else:
-        print("\033[31m错误:\033[0m 操作不正确")
-        print("可用操作: help, install, update, remove, clean")
+        print(_("\033[31mERROR:\033[0m The action does not exist."))
+        print(_("Available actions: help, version, install, update, remove, clean"))
         finished = 0
 
     exit(finished)
@@ -485,4 +488,4 @@ if __name__ == "__main__":
         else:
             main(False)
     except KeyboardInterrupt:
-        print("\n\033[31m错误:\033[0m 中止信号")
+        print(_("\n\033[31mERROR:\033[0m Ctrl + C is pressed."))
