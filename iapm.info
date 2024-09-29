@@ -1,0 +1,9 @@
+name=iapm
+ver=1.0
+vercompare=01000000
+depends={"glibc", "yyjson"}
+installation_file="/usr/bin/iapm"
+installation_file="/etc/iapm.conf"
+installation_file="/var/db/iapm/"
+installation_file="/var/cache/iapm"
+installation_file="/usr/share/locale/*/*/iapm.mo"

@@ -1,0 +1,200 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-09-28 22:27+0800\n"
+"PO-Revision-Date: 2024-09-29 HO:MI+ZONE\n"
+"Last-Translator: play <play-studio@outlook.com>\n"
+"Language-Team: play <play-studio@outlook.com>\n"
+"Language: zh_CN\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: main.py:29
+#, python-format
+msgid "[33mATTENTION:[0m The package [32m%s[0m will be [34m[1mreinstalled[0m."
+msgstr "[33m注意:[0m 软件包 [32m%s[0m 将会被 [34m[1m重新安装[0m。"
+
+#: main.py:96
+msgid "Clean up IAPM cache? [Y/n] "
+msgstr "要清理 IAPM 缓存吗? [Y/n]"
+
+#: main.py:101
+msgid "Operation completed!"
+msgstr "操作完成!"
+
+#: main.py:115
+msgid ""
+"\n"
+"No packages will be operated."
+msgstr ""
+"\n"
+"没有软件包会被操作。"
+
+#: main.py:118
+msgid ""
+"\n"
+"These packages will be [34m[1mupdated[0m:"
+msgstr ""
+"\n"
+"以下的软件包将会被[34m[1m更新[0m:"
+
+#: main.py:125 main.py:279
+msgid "Allow IAPM to operate? [Y/n] "
+msgstr "允许 IAPM 操作吗? [Y/n] "
+
+#: main.py:129 main.py:283
+msgid "Operation aborted."
+msgstr "操作中止。"
+
+#: main.py:136 main.py:291
+msgid "Downloading packages:"
+msgstr "下载软件包:"
+
+#: main.py:132 main.py:217
+msgid "[33mWARNING:[0m Can not understand."
+msgstr "[33m警告:[0m 未能理解。"
+
+#: main.py:148 main.py:303
+msgid ""
+"\n"
+"Installing packages:"
+msgstr ""
+"\n"
+"安装软件包:"
+
+#: main.py:167 main.py:252 main.py:322
+msgid ""
+"\n"
+"Operation completed!"
+msgstr ""
+"\n"
+"操作完成!"
+
+#: main.py:177
+msgid ""
+"\n"
+"These packages will be [34m[1mremoved[0m:"
+msgstr ""
+"\n"
+"以下的包将会被[34m[1m移除[0m:"
+
+#: main.py:196
+msgid ""
+"\n"
+"[33mWARNING:[0m The operation is VERY DANGER\n"
+"IAPM rufused to remove the package \"iapm\". If IAPM is the only package "
+"manager on your system, this will make it difficult to manage the packages\n"
+"If you STILL want to continue, please add \"IKnowWhatImDoing\" to /etc/iapm."
+"conf and continue with option \"--force\""
+msgstr ""
+"\n"
+"[33m警告:[0m 该操作非常危险\n"
+"IAPM 拒绝移除软件包 \"iapm\"。"
+"若 IAPM 是您系统上唯一的软件包管理器, 这将导致软件包难以管理。\n"
+"如果您仍然要继续, 请在 /etc/iapm.conf 添加 \"IKnowWhatImDoing\" ,"
+"然后使用 \"--force\" 选项继续。"
+
+#: main.py:202
+msgid ""
+"\n"
+"Press Ctrl + C to stop removing."
+msgstr ""
+"\n"
+"按下 Ctrl + C 以阻止移除。"
+
+#: main.py:203
+msgid ""
+"\n"
+"Removing in:"
+msgstr ""
+"\n"
+"在倒计时后移除:"
+
+#: main.py:210
+msgid "Allow IAPM to operate? [y/N] "
+msgstr "允许 IAPM 操作吗? [y/N] "
+
+#: main.py:218
+msgid ""
+"\n"
+"Removing packages:"
+msgstr ""
+"\n"
+"移除软件包:"
+
+#: main.py:263
+msgid "[33mWARNING:[0m Skipping dependency handling is not recommended."
+msgstr "[33m警告:[0m 跳过依赖处理不被推荐。"
+
+#: main.py:272
+msgid ""
+"\n"
+"These packages will be [34m[1minstalled[0m:"
+msgstr ""
+"\n"
+"以下的软件包将会被[34m[1m安装[0m:"
+
+#: main.py:377
+msgid ""
+"\n"
+"Distro: "
+msgstr ""
+"\n"
+"发行版: "
+
+#: main.py:404
+msgid "No action. (Get help with action \"help\")"
+msgstr "没有操作。(使用 \"help\" 来获取帮助)"
+
+#: main.py:423
+msgid "/ |____| \\  A simple package manager"
+msgstr "/ |____| \\  一个简易的不能再简易的软件包管理器"
+
+#: main.py:430 main.py:457
+msgid "[31mERROR:[0m Must run as root."
+msgstr "[31m错误:[0m 必须以 root 运行。"
+
+#: main.py:437
+msgid "[31mERROR:[0m No package is selected."
+msgstr "[31m错误:[0m 无软件包被选定。"
+
+#: main.py:440
+#, python-format
+msgid "Preparing to [1m[34%s[0m..."
+msgstr "准备 [1m[34m%s[0m 软件包..."
+
+#: main.py:445
+msgid "OK!"
+msgstr "完成!"
+
+#: main.py:448
+msgid ""
+"\n"
+"[33mERROR:[0m @all only can be used with action \"update\"."
+msgstr ""
+"\n"
+"[33m错误:[0m @all 只应于 \"update\" 连用。"
+
+#: main.py:461
+msgid "[31mERROR:[0m The action does not exist."
+msgstr "[31m错误:[0m 该操作不存在。"
+
+#: main.py:462
+msgid "Available actions: help, version, install, update, remove, clean"
+msgstr "可用操作: help, version, install, update, remove, clean"
+
+#: main.py:491
+msgid ""
+"\n"
+"[31mERROR:[0m Ctrl + C is pressed."
+msgstr ""
+"\n"
+"[31m错误:[0m Ctrl + C 被按下。"

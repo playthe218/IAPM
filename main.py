@@ -6,7 +6,8 @@ import sys
 import time
 import re
 import gettext
-_ = gettext.gettext
+T = gettext.translation('iapm', '/usr/share/locale')
+_ = T.gettext
 
 def clean_exists(packages, select):
     exists = []
@@ -133,6 +134,7 @@ def update(packages, selects, options):
     print()
     
     # Download
+    print(_("Downloading packages:"))
     for package in packages:
         spacing = " " * (32 - len(package))
         bar = 16
@@ -194,7 +196,7 @@ def remove(packages, selects, options):
     try:
         if iapm_dangerous:
             print(_('\n\033[33mWARNING:\033[0m The operation is VERY DANGER\nIAPM rufused to remove the package "iapm". If IAPM is the only package manager on your system, this will make it difficult to manage the packages\nIf you STILL want to continue, please add "IKnowWhatImDoing" to /etc/iapm.conf and continue with option "--force"'))
-            print(_("Opetation aborted."))
+            print(_("Operation aborted."))
             return 0
     except: pass
     
@@ -266,7 +268,7 @@ def install(packages, selects, options):
     
     # List packages:
     if packages == []:
-        print(_("\nNo package will be operated."))
+        print(_("\nNo packages will be operated."))
         return 1
     
     print(_("\nThese packages will be \033[34m\033[1minstalled\033[0m:"))
@@ -283,10 +285,11 @@ def install(packages, selects, options):
             print(_("Operation aborted."))
             exit()
         else:
-            print(_("\033[33mWARNING:\033[0m Can not understand"))
+            print(_("\033[33mWARNING:\033[0m Can not understand."))
     print()
     
     # Download
+    print(_("Downloading packages:"))
     for package in packages:
         if not os.path.exists("%s/%s.iap" % (tmpdir, package)):
             spacing = " " * (32 - len(package))
@@ -437,7 +440,7 @@ def main(root):
                 print(_("\033[31mERROR:\033[0m No package is selected."))
                 exit()
             
-            print(_("Preparing to \033[1m\033[34m%s\033[0m ...") % base_action, end="")
+            print(_("Preparing to \033[1m\033[34m%s\033[0m...") % base_action, end="")
             if base_action != "update":
                 packages = get_depends(select)
             if base_action == "update" and select == ['@all']:
@@ -446,6 +449,7 @@ def main(root):
             
             if not base_action == "update" and select == ['@all']:
                 print(_('\n\033[33mERROR:\033[0m @all only can be used with action "update".'))
+                exit(0)
             if base_action == "install":
                 packages = clean_exists(packages, select)
                 finished = install(packages, select, option)
