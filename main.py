@@ -6,8 +6,12 @@ import sys
 import time
 import re
 import gettext
-T = gettext.translation('iapm', '/usr/share/locale')
-_ = T.gettext
+
+try:
+    T = gettext.translation('iapm', '/usr/share/locale')
+    _ = T.gettext
+except:
+    _ = gettext.gettext
 
 def clean_exists(packages, select):
     exists = []
@@ -378,10 +382,12 @@ def get_depends(packages):
 
 def identify_distro():
     print(_("\nDistro: "), end="")
-    # distro = platform.linux_distribution()
-    distro = os.popen("lsb_release -i").read().strip()
-    distro = distro.split(" ")[1][4:]
-    print(distro + "\n")
+    try:
+        distro = os.popen("lsb_release -i").read().strip()
+        distro = distro.split(" ")[1][4:]
+    except:
+        distro = "Unknown"
+        print(distro + "\n")
     return distro
 
 def main(root):
@@ -479,7 +485,7 @@ with open("/etc/iapm.conf", 'r') as conf:
                 config[key] = value.strip()
 
 rootdir = config.get('rootdir', '/')
-dwfrom = config.get('downloadfrom', '')
+dwfrom = config.get('downloadfrom', '/home/play/Desktop/iapm_downloadfrom')
 reposdir = config.get('reposdir', '/var/db/iapm/repos')
 tmpdir = config.get('cachedir', '/var/cache/iapm/')
 databasedir = config.get('databasedir', '/var/db/iapm/database')
