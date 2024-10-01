@@ -387,7 +387,7 @@ def identify_distro():
         distro = distro.split(" ")[1][4:]
     except:
         distro = "Unknown"
-        print(distro + "\n")
+    print(distro + "\n")
     return distro
 
 def main(root):
@@ -418,12 +418,12 @@ def main(root):
         print("The IAPM is debugging.")
     
     if base_action == "help":
-        print("\033[1miapm \033[34mhelp")
+        print("\033[0m\033\1miapm \033[34mhelp")
         print("     \033[34mversion")
         print("     \033[34minstall \033[32m<packages> \033[33m<options>")
         print("     \033[34mupdate \033[32m<@all/pkg> \033[33m<options>")
         print("     \033[34mremove \033[32m<packages> \033[33m<options>")
-        print("     \033[34mclean")
+        print("     \033[34mclean\033[0m")
         finished = 0
     
     elif base_action == "version":
@@ -485,7 +485,7 @@ with open("/etc/iapm.conf", 'r') as conf:
                 config[key] = value.strip()
 
 rootdir = config.get('rootdir', '/')
-dwfrom = config.get('downloadfrom', '/home/play/Desktop/iapm_downloadfrom')
+dwfrom = config.get('downloadfrom', '')
 reposdir = config.get('reposdir', '/var/db/iapm/repos')
 tmpdir = config.get('cachedir', '/var/cache/iapm/')
 databasedir = config.get('databasedir', '/var/db/iapm/database')
