@@ -105,6 +105,9 @@ def main():
     
     # Start Process.
     iapmDoProcess(action, packages)
+    
+    # Completed. ll1 or ll6 or ll7?
+    iapmPrintAndLog("Completed!", 7)
 
 
 main()
