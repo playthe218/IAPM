@@ -165,7 +165,7 @@ def iapmPrintAndLog(object, loglevel = 1):
             bePrint = "%s: %s" % (level[loglevel - 1], object)
         
     # Color. make it a piece of shit. lol.
-    if enable_color:
+    if enableColor:
         if loglevel == 1:
             bePrint = "\033[1;37m%s\033[0m" % bePrint
         if loglevel == 2:
@@ -188,10 +188,11 @@ def iapmPrintAndLog(object, loglevel = 1):
 def main():
     global debug
     global verbose
-    global enable_color
+    global enableColor
     debug = False
     verbose = False
-    enable_color = True
+    # It must be set immediately because iapmPrintAndLog() needs it.
+    enableColor = False
     
     # First(Basic) argv check.
     for i in range(1, len(sys.argv)):
@@ -201,14 +202,6 @@ def main():
         if sys.argv[i] == "--verbose" or sys.argv[i] == "-v":
             print("IAPM is running in verbose mode now.")
             verbose = True
-    
-    # the version of iapm is testing. (HEY THE TRUTH IS THAT I WANT TO TEST THE COLOR LOL ;D)
-    iapmPrintAndLog("The version of iapm is testing and not stable.", 3)
-    iapmPrintAndLog("The version of iapm is testing and not stable.", 4)
-    iapmPrintAndLog("The version of iapm is testing and not stable.", 5)
-        
-    # (no finish) Get some DIRECTORY from /etc/iapm.conf
-    
     
     # Check if no more argv provided.
     if len(sys.argv) == 1:
@@ -223,6 +216,7 @@ def main():
     targets = []
     options = []
     
+    # Need make it better make the FIRST 'target' be the action, NOT the first argv.
     iapmPrintAndLog("The action is %s" % action, 6)
     for i in range(2, len(sys.argv)):
         if sys.argv[i].startswith("--") or sys.argv[i].startswith("-"):
@@ -233,11 +227,56 @@ def main():
             iapmPrintAndLog("Found a target \"%s\"." % sys.argv[i], 6)
     iapmPrintAndLog("Final targets list: %s" % targets, 6)
     iapmPrintAndLog("Final options list: %s" % options, 6)
-   
-    # iapmPrintAndLog("hello info")
-    # iapmPrintAndLog("hello critical", 5)
-    # iapmPrintAndLog("hello debug", 6)
-    # iapmPrintAndLog("hello verbose", 7)
+    
+    # Get DIRs from default, /etc/iapm.conf and argv.
+    configFile = "/etc/iapm.conf"
+    ### By default.
+    rootDir = "/"
+    databaseDir = "/var/lib/iapm/"
+    cacheDir = "/var/cache/iapm/"
+    logFile = "/var/log/iapm.log"
+    LockFile = "/var/lib/iapm.lock"
+    enableColor = False    
+    ### iapm.conf must be set by argv before opening it.
+    if "--configfile=" in options:
+        configFile = options[options.index("--configfile=") + 1]
+        iapmPrintAndLog("Found configFile in argv: %s, /etc/iapm.conf will not be used." % configFile, 6)
+        ### ohohohohoh are you kidding me??? well im going to relax now
+    ### By /etc/iapm.conf.
+    if os.path.exists(configFile):
+        iapmPrintAndLog("Found config file %s." % configFile, 6)
+        with open(configFile, "r") as f:
+            for line in f.readlines():
+                if line.startswith("#") or line.strip() == "":
+                    continue
+                if line.startswith("configFile"):
+                    iapmPrintAndLog("Found configFile in %s." % configFile, 6)
+                    configFile = line.split("=")[1].strip()
+                if line.startswith("rootDir"):
+                    iapmPrintAndLog("Found rootDir in %s." % configFile, 6)
+                    rootDir = line.split("=")[1].strip()
+                if line.startswith("databaseDir"):
+                    iapmPrintAndLog("Found databaseDir in %s." % configFile, 6)
+                    databaseDir = line.split("=")[1].strip()
+                if line.startswith("cacheDir"):
+                    iapmPrintAndLog("Found cacheDir in %s." % configFile, 6)
+                    cacheDir = line.split("=")[1].strip()
+                if line.startswith("logFile"):
+                    iapmPrintAndLog("Found logFile in %s." % configFile, 6)
+                    logFile = line.split("=")[1].strip()
+                if line.startswith("LockFile"):
+                    iapmPrintAndLog("Found LockFile in %s." % configFile, 6)
+                    LockFile = line.split("=")[1].strip()
+                if line.startswith("enableColor"):
+                    iapmPrintAndLog("Found enableColor in %s." % configFile, 6)
+                    enableColor = True if "True" in line else False
+    else:
+        iapmPrintAndLog("Config file %s not found. Using default values." % configFile, 3)  
+    
+    # the version of iapm is testing. (HEY THE TRUTH IS THAT I WANT TO TEST THE COLOR LOL ;D)
+    iapmPrintAndLog("The version of iapm is testing and not stable.", 3)
+    iapmPrintAndLog("The version of iapm is testing and not stable.", 4)
+    iapmPrintAndLog("The version of iapm is testing and not stable.", 5)
     
     # Not finished: depend resolve
     packages = targets
