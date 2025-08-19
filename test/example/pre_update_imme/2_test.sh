@@ -1,0 +1,1 @@
+echo "This is pre update immediately script example, it should be the second."

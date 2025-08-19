@@ -1,0 +1,1 @@
+echo "This is post install immediately script example, it should be the second."

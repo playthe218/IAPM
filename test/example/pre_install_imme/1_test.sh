@@ -1,0 +1,1 @@
+echo "This is pre install immediately script example, it should be the first."

@@ -1,0 +1,1 @@
+echo "This is post remove script example, it should be the first."

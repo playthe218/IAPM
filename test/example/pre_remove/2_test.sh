@@ -1,0 +1,1 @@
+echo "This is pre remove script example, it should be the second."

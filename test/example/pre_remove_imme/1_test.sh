@@ -1,0 +1,1 @@
+echo "This is pre remove immediately script example, it should be the first."

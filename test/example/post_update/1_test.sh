@@ -1,0 +1,1 @@
+echo "This is post update script example, it should be the first."
