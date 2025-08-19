@@ -28,7 +28,69 @@ def iapmDoProcess(action, packages):
         else:
             print("Sorry, can't understand \"%s\"." % confirm, end = "")
     
-    # Not Finished
+    stage = 0
+    if action == "install":
+        # For install: 1 - Download packages, 2, Unpack Packages, 3 - Run pre-install scripts, 4 - Install packages, 5 - Run post-install scripts.
+        while go:
+            # if im crazy, if it failed, why not let stage -= 1 and do again?
+            stage += 1
+            if stage == 1:
+                # Download packages.
+                try:
+                    iapmPrintAndLog("[1/5] Download packages.", 1)
+                    for i in range(0, len(packages)):
+                        targetPackage = packages[i]
+                        iapmPrintAndLog("(%d/%d) Downloading packages %s." % (i + 1, len(packages), targetPackage))
+                        # Not finished.(When this, 23:45.)
+                except:
+                    iapmPrintAndLog("An error occurred when *Downloading packages*. Exit now.", 4)
+                    go = False
+            if stage == 2:
+                # Unpack packages.
+                try:
+                    iapmPrintAndLog("[2/5] Unpack packages", 1)
+                    for i in range(0, len(packages)):
+                        targetPackage = packages[i]
+                        iapmPrintAndLog("(%d/%d) Unpacking packages %s." % (i + 1, len(packages), targetPackage))
+                        # Not finished.
+                except:
+                    iapmPrintAndLog("An error occurred when *Unpacking packages*. Exit now.", 4)
+                    go = False
+            if stage == 3:
+                # Do pre-install scripts.
+                try:
+                    iapmPrintAndLog("[3/5] Run pre-install scripts.", 1)
+                    for i in range(0, len(packages)):
+                        targetPackage = packages[i]
+                        iapmPrintAndLog("(%d/%d) Running pre-install script of %s." % (i + 1, len(packages), targetPackage))
+                        # Not finished.
+                except:
+                    iapmPrintAndLog("An error occurred when *Running pre-install scripts*. Exit now.", 4)
+                    go = False
+            if stage == 4:
+                # Install packages.
+                try:
+                    iapmPrintAndLog("[4/5] Install packages.", 1)
+                    for i in range(0, len(packages)):
+                        targetPackage = packages[i]
+                        iapmPrintAndLog("(%d/%d) Installing packages %s." % (i + 1, len(packages), targetPackage))
+                        # Not finished.
+                except:
+                    iapmPrintAndLog("An error occurred when *Installing packages*. Exit now.", 4)
+                    go = False
+            if stage == 5:
+                # Do post-install scripts.
+                try:
+                    iapmPrintAndLog("[5/5] Run post-install scripts.", 1)
+                    for i in range(0, len(packages)):
+                        targetPackage = packages[i]
+                        iapmPrintAndLog("(%d/%d) Running post-install script of %s." % (i + 1, len(packages), targetPackage))
+                        # Not finished.
+                        
+                        go = False
+                except:
+                    iapmPrintAndLog("An error occurred when *Running post-install scripts*. Exit now.", 4)
+                    go = False
     
     iapmPrintAndLog("Exiting \"iapmDoProcess\".", 6)
             
@@ -41,7 +103,7 @@ def iapmPrintAndLog(object, loglevel = 1):
     # If the loglevel is not set, IAPM will use log level 1 as default.
     
     # Make the log and initialize the be-print.
-    log = "%s[%s]%s" % (time.strftime('[%Y-%m-%d %H:%M:%S]', time.localtime()), level[loglevel - 1], object)
+    log = "%s[%s] %s" % (time.strftime('[%Y-%m-%d %H:%M:%S]', time.localtime()), level[loglevel - 1], object)
     bePrint = object
     
     # According the log level to add something to show
@@ -70,6 +132,9 @@ def main():
         if sys.argv[i] == "--verbose" or sys.argv[i] == "-v":
             print("IAPM is running in verbose mode now.")
             verbose = True
+        
+    # (no finish) Get some DIRECTORY from /etc/iapm.conf
+    
     
     # Check if no more argv provided.
     if len(sys.argv) == 1:
