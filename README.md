@@ -1,1 +1,6 @@
-IAPM is a simple package manager.
+# IAPM
+一个简易的软件包管理器
+
+正在重写。因为上一个版本比这个还要屎
+
+真的有人来看这个突发奇想写的屎山吗
