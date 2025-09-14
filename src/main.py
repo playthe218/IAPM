@@ -4,11 +4,12 @@ import sys
 import signal
 
 
-def iapmDoProcess(action, packages):
+def iapmDoPackageProcess(action, packages):
     clean = False
     iapmPrintAndLog("Entered \"iapmDoProcess\".", 6)
     done = "ed"
-    if action == "update":
+    need_change_ed = ['update', 'remove']
+    if action in need_change_ed:
         done = "d"
     iapmPrintAndLog("These following packages will be %s%s:" % (action, done), 2)
     for i in range(0, len(packages)):
@@ -42,7 +43,7 @@ def iapmDoProcess(action, packages):
                     for i in range(0, len(packages)):
                         targetPackage = packages[i]
                         iapmPrintAndLog("(%d/%d) Downloading packages %s." % (i + 1, len(packages), targetPackage))
-                        os.system('')
+                        os.system('curl %s/%s/%s --output %s/%s')
                 except:
                     iapmPrintAndLog("An error occurred when *Downloading packages*. Exit now.", 4)
                     go = False
@@ -189,10 +190,15 @@ def main():
     global debug
     global verbose
     global enableColor
+    global testmode
+    global username
     debug = False
     verbose = False
+    testmode = False
+    action = None
+    username = os.getlogin()
     # It must be set immediately because iapmPrintAndLog() needs it.
-    enableColor = False
+    enableColor = True
     
     # First(Basic) argv check.
     for i in range(1, len(sys.argv)):
@@ -202,29 +208,45 @@ def main():
         if sys.argv[i] == "--verbose" or sys.argv[i] == "-v":
             print("IAPM is running in verbose mode now.")
             verbose = True
+        if sys.argv[i] == "--test":
+            testmode = "Enable"
+        
+    if testmode == "Enable":
+        print("IAPM is running in test mode now.")
+        iapmPrintAndLog("This feature is for internal use only, it will change the way IAPM operates.", 3)
+        iapmPrintAndLog("Please check ~/.iapm/ .", 3)
+        iapmPrintAndLog("Creating Directory ~/.iapm/ .", 7)
+        os.system("mkdir /home/%s/.iapm -p" % username)
+        testmode = True
     
     # Check if no more argv provided.
     if len(sys.argv) == 1:
         iapmPrintAndLog("Usage: iapm [ action ] [ packages ] [options]")
         iapmPrintAndLog("       iapm clean")
+        iapmPrintAndLog("")
+        iapmPrintAndLog("Example: iapm install hello")
+        iapmPrintAndLog("         iapm update @all")
         sys.exit(0)
     
-    # Second argv check.
-    action = sys.argv[1]
     global targets
     global options
     targets = []
     options = []
     
     # Need make it better make the FIRST 'target' be the action, NOT the first argv.
-    iapmPrintAndLog("The action is %s" % action, 6)
-    for i in range(2, len(sys.argv)):
+    FoundFirstTarget = False
+    for i in range(1, len(sys.argv)):
         if sys.argv[i].startswith("--") or sys.argv[i].startswith("-"):
-            options.append(sys.argv[i])
-            iapmPrintAndLog("Found an option \"%s\"." % sys.argv[i], 6)
+                options.append(sys.argv[i])
+                iapmPrintAndLog("Found an option \"%s\"." % sys.argv[i], 6)
         else:
-            targets.append(sys.argv[i])
-            iapmPrintAndLog("Found a target \"%s\"." % sys.argv[i], 6)
+            if not FoundFirstTarget:
+                action = sys.argv[i]
+                iapmPrintAndLog("Found the action \"%s\"." % action, 6)
+                FoundFirstTarget = True
+            else:
+                targets.append(sys.argv[i])
+                iapmPrintAndLog("Found a target \"%s\"." % sys.argv[i], 6)
     iapmPrintAndLog("Final targets list: %s" % targets, 6)
     iapmPrintAndLog("Final options list: %s" % options, 6)
     
@@ -232,12 +254,20 @@ def main():
     configFile = "/etc/iapm.conf"
     ### By default.
     rootDir = "/"
-    databaseDir = "/var/lib/iapm/"
+    databaseDir = "/var/db/iapm/"
     cacheDir = "/var/cache/iapm/"
     logFile = "/var/log/iapm.log"
     LockFile = "/var/lib/iapm.lock"
-    enableColor = False    
+    enableColor = True    
+    
+    ### if test mode.
+    if testmode:
+        rootDir = "/home/%s/.iapm/fakeroot/" % username
+    
     ### iapm.conf must be set by argv before opening it.
+    
+    """ That is actually fucked up.
+    
     if "--configfile=" in options:
         configFile = options[options.index("--configfile=") + 1]
         iapmPrintAndLog("Found configFile in argv: %s, /etc/iapm.conf will not be used." % configFile, 6)
@@ -272,20 +302,53 @@ def main():
                     enableColor = True if "True" in line else False
     else:
         iapmPrintAndLog("Config file %s not found. Using default values." % configFile, 3)  
+    """
+    
+    iapmPrintAndLog("Final rootDir: %s" % rootDir, 6)
+    iapmPrintAndLog("Final databaseDir: %s/%s" % (rootDir, databaseDir), 6)
+    iapmPrintAndLog("Final cacheDir: %s/%s" % (rootDir, cacheDir), 6)
+    iapmPrintAndLog("Final logFile: %s/%s" % (rootDir, logFile), 6)
+    iapmPrintAndLog("Final LockFile: %s/%s" % (rootDir, LockFile), 6)
     
     # the version of iapm is testing. (HEY THE TRUTH IS THAT I WANT TO TEST THE COLOR LOL ;D)
     iapmPrintAndLog("The version of iapm is testing and not stable.", 3)
-    iapmPrintAndLog("The version of iapm is testing and not stable.", 4)
-    iapmPrintAndLog("The version of iapm is testing and not stable.", 5)
+    #iapmPrintAndLog("The version of iapm is testing and not stable.", 4)
+    #iapmPrintAndLog("The version of iapm is testing and not stable.", 5)
     
     # Not finished: depend resolve
+    packages = []
     packages = targets
     
+    # Check if nothing given.
+    if action == None:
+        iapmPrintAndLog("No action given.", 4)
+        exit(1)
+    
+    # Check if action is invaild.
+    Actions = ['install', 'remove', 'update', 'clean', 'version']
+    if not action in Actions:
+        iapmPrintAndLog("This action is invaild.", 4)
+        exit(1)
+    
+    # Check if packages(targets) is empty.
+    if packages == []:
+        iapmPrintAndLog("No target given.", 4)
+        exit(1)
+    
+    # Check if need root, 
+    NeedRootActions = ['install', 'remove', 'update', 'clean']
+    if testmode:
+        iapmPrintAndLog("Running in test mode, skipping permission check.", 3)
+    elif os.getuid() != 0 and action in NeedRootActions:
+        iapmPrintAndLog("You can\'t do this unless you are root.", 4)
+        exit(1)
+    
     # Start Process.
-    iapmDoProcess(action, packages)
+    iapmDoPackageProcess(action, packages)
     
     # Completed. ll1 or ll6 or ll7?
     iapmPrintAndLog("Completed!", 7)
+    exit()
 
 
 main()
