@@ -10,7 +10,14 @@ def echo(msg, loglevel):
     # Notice: Important informations, more important than Normal but not a Warning. (eg. Optional Depends.)
     # Normal: You see it again and again and again and again and again...
     
+    # Adding colorful output and log file support in future.
     import time
+    loglevels = ["Critical", "Error", "Warning", "Notice", "Normal", "Debug", "Verbose"]
     currentTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    print(msg)
-    # Pause here, I'm going to sleep. :D
+    fullmsg = f"[{currentTime}] [{loglevels[loglevel]}] {msg}"
+    if loglevel == 4:
+        viewmsg = f"{msg}"
+    else:
+        viewmsg = f"{loglevels[loglevel]}: {msg}"
+
+    print(viewmsg)
