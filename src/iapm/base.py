@@ -14,7 +14,7 @@ def echo(msg, loglevel):
     import time
     loglevels = ["Critical", "Error", "Warning", "Notice", "Normal", "Debug", "Verbose"]
     currentTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    fullmsg = f"[{currentTime}] [{loglevels[loglevel]}] {msg}"
+    fullmsg = f"[{currentTime}][{loglevels[loglevel]}]{msg}"
     if loglevel == 4:
         viewmsg = f"{msg}"
     else:

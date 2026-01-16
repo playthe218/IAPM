@@ -135,7 +135,9 @@ def main():
         iapm.base.echo(f"Never test IAPM with root permissions, this may break your system badly.", 1)
         sys.exit(1)
     
-    # Make dependency list.
+    # Make dependency list.(if action:install)
+    if action == "install":
+        packages = iapm.extra.addDeps(targets)
     
 
 if __name__ == "__main__":
