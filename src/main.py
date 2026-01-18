@@ -13,55 +13,31 @@ import time
 import os
 import signal
 import gettext
+import configparser
+import iapm
 
 
 def main():
-    # Set default configurations.
-    rootdir = "/"
-    dbdir = "/var/lib/iapm/"
-    cachedir = "/var/cache/iapm/"
-    logfile = "/var/log/iapm.log"
-    lockfile = "/var/lib/iapm/iapm.lock"
-    gpgdir = "/etc/iapm/gpg/"
-
-    verbose = False
-    color = False
+    # NEVER change it unless testing.
+    configfile = "/etc/iapm/iapm.conf"
     test = False
 
     action = None
     targets = []
     options = []
 
-    # Set configurations, according to /etc/iapm.conf, the piece of shit is already fucked up.
-    #try:
-    #    configfile = open("/etc/iapm/iapm.conf", "r")
-    #    for line in configfile:
-    #        line = line.strip()
-    #        if line.startswith("#") or line == "":
-    #            continue
-    #        key, value = line.split("=", 1)
-    #        key = key.strip()
-    #        value = value.strip().strip('"').strip("'")
-    #        if key == "ROOTDIR":
-    #            rootdir = value
-    #        elif key == "DBDIR":
-    #            dbdir = value
-    #        elif key == "CACHEDIR":
-    #            cachedir = value
-    #        elif key == "LOGFILE":
-    #            logfile = value
-    #        elif key == "LOCKFILE":
-    #            lockfile = value
-    #        elif key == "GPGDIR":
-    #            gpgdir = value
-    #        elif key == "Verbose":
-    #            verbose = value.lower() in ("True")
-    #        elif key == "Color":
-    #            color = value.lower() in ("True")
-    #    configfile.close()
-    #except FileNotFoundError:
-    #    print("Error: /etc/iapm/iapm.conf not found, can not continue.")
-    #    sys.exit(1)
+    # Set configurations, according to /etc/iapm/iapm.conf, and provide fallback if need.
+    try:
+        rootdir = iapm.base.readconfig(configfile, "GENERAL:ROOTDIR", "/")
+        dbdir = iapm.base.readconfig(configfile, "GENERAL:DBDIR", "/var/lib/iapm/")
+        cachedir = iapm.base.readconfig(configfile, "GENERAL:CACHEDIR", "/var/cache/iapm/")
+        logfile = iapm.base.readconfig(configfile, "GENERAL:LOGFILE", "/var/log/iapm.log")
+        lockfile = iapm.base.readconfig(configfile, "GENERAL:LOCKFILE", "/var/lib/iapm/iapm.lock")
+        gpgdir = iapm.base.readconfig(configfile, "GENERAL:GPGDIR", "/etc/iapm/gpg/")
+        verbose = iapm.base.readconfig(configfile, "MISCS:Color", False)
+        color = iapm.base.readconfig(configfile, "MISCS:Color", True)
+    except FileNotFoundError:
+        iapm.base.echo("IAPM config file is not found.", 1)
         
     # Check what user want to do. 
     for args in sys.argv[1:]:
@@ -85,8 +61,9 @@ def main():
         verbose = True
     if "--test" in options:
         test = True
-        print("Notice: You are running IAPM in test mode.")
-        print("Notice: Check ~/.iapm/fakeroot")
+        iapm.base.echo("You are running IAPM in test mode.", 3)
+        iapm.base.echo("We will assume that this IAPM is in its src.", 3)
+        iapm.base.echo("Check ~/.iapm/fakeroot", 3)
         os.system("mkdir -p ~/.iapm/fakeroot")
         rootdir = "~/.iapm/fakeroot"
         
@@ -97,23 +74,22 @@ def main():
 
     # (Testing) list results.
     if verbose:
-        print("Dictionary Settings:")
-        print(f"  ROOTDIR: {rootdir}")
-        print(f"  DBDIR: {dbdir} ({rootdir}/{dbdir})")
-        print(f"  CACHEDIR: {cachedir} ({rootdir}/{cachedir})")
-        print(f"  LOGFILE: {logfile} ({rootdir}/{logfile})")
-        print(f"  LOCKFILE: {lockfile} ({rootdir}/{lockfile})")
-        print(f"  GPGDIR: {gpgdir} ({rootdir}/{gpgdir})")
-        print(f"  Verbose: {verbose}")
-        print(f"  Color: {color}")
-        print(f"  Action: {action}")
-        print(f"  Targets: {targets}")
-        print(f"  Options: {options}")
-        print("Initialization completed.")
+        iapm.base.echo(f"Dictionary Settings: {rootdir}", 5)
+        iapm.base.echo(f"  ROOTDIR: {rootdir}", 5)
+        iapm.base.echo(f"  DBDIR: {dbdir} ({rootdir}/{dbdir})", 5)
+        iapm.base.echo(f"  CACHEDIR: {cachedir} ({rootdir}/{cachedir})", 5)
+        iapm.base.echo(f"  LOGFILE: {logfile} ({rootdir}/{logfile})", 5)
+        iapm.base.echo(f"  LOCKFILE: {lockfile} ({rootdir}/{lockfile})", 5)
+        iapm.base.echo(f"  GPGDIR: {gpgdir} ({rootdir}/{gpgdir})", 5)
+        iapm.base.echo(f"  Verbose: {verbose}", 5)
+        iapm.base.echo(f"  Color: {color}", 5)
+        iapm.base.echo(f"  Action: {action}", 5)
+        iapm.base.echo(f"  Targets: {targets}", 5)
+        iapm.base.echo(f"  Options: {options}", 5)
+        iapm.base.echo("Initialization completed.", 5)
         print()
 
     # Start IAPM main program.(Preparing)
-    import iapm
     
     # Check Permissions and if the action is valid.
     if action == None:
@@ -137,12 +113,12 @@ def main():
     
     # Make dependency list.(if action:install)
     if action == "install":
-        packages = iapm.extra.addDeps(targets)
+        packages = iapm.extra.addDeps(targets, dbdir)
     
 
 if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print("\nError: Interrupted by user. Exiting...")
+        iapm.base.echo("Interrupted by user. Exiting...", 1)
         sys.exit(1)

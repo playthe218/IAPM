@@ -1,0 +1,13 @@
+[osbase]
+description = "XXX Base System"
+arch = *
+depends = ['filesystem']
+version_view = "1.2.3-4"
+version_check = 001002003004
+
+[filesystem]
+description = "Base System files"
+arch = *
+depends = []
+version_view = "0.1.2-3"
+version_check = 000001002003
