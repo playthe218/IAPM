@@ -8,7 +8,9 @@ import time
 import os
 
 
-def echo(msg, loglevel):
+def echo(msg, loglevel, color=False, level=0):
+    # Level = 0 - Normal 1 - Debug 2 - Verbose
+    
     # Here is a log level list:
     # 0: Critical/Fatal 1: Error 2: Warning 3: Notice 4: Normal 5: Debug 6: Verbose
     
@@ -27,9 +29,28 @@ def echo(msg, loglevel):
     if loglevel == 4:
         viewmsg = f"{msg}"
     else:
-        viewmsg = f"{loglevels[loglevel]}: {msg}"
+        if color:
+            if loglevel == 0:
+                viewmsg = f"\033[1;31m{loglevels[loglevel]}:\033[0m {msg}"
+            if loglevel == 1:
+                viewmsg = f"\033[0;31m{loglevels[loglevel]}:\033[0m {msg}"
+            if loglevel == 2:
+                viewmsg = f"\033[1;33m{loglevels[loglevel]}:\033[0m {msg}"
+            if loglevel == 3:
+                viewmsg = f"\033[0;33m{loglevels[loglevel]}:\033[0m {msg}"
+            if loglevel == 5:
+                viewmsg = f"\033[1;30m{loglevels[loglevel]}:\033[0m {msg}"
+            if loglevel == 6:
+                viewmsg = f"\033[0;30m{loglevels[loglevel]}:\033[0m {msg}"
+        else:
+            viewmsg = f"{loglevels[loglevel]}: {msg}"
 
-    print(viewmsg)
+    if loglevel <= 4 and level == 0:
+        print(viewmsg)
+    elif level >= 1 and loglevel != 6:
+        print(fullmsg)
+    elif level == 2:
+        print(fullmsg)
 
 def readconfig(file, target, fallback=None):
     config = configparser.ConfigParser()

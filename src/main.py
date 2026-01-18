@@ -18,9 +18,11 @@ import iapm
 
 
 def main():
+    color = False
     # NEVER change it unless testing.
     configfile = "/etc/iapm/iapm.conf"
     test = False
+    printlevel = 0
 
     action = None
     targets = []
@@ -37,7 +39,7 @@ def main():
         verbose = iapm.base.readconfig(configfile, "MISCS:Color", False)
         color = iapm.base.readconfig(configfile, "MISCS:Color", True)
     except FileNotFoundError:
-        iapm.base.echo("IAPM config file is not found.", 1)
+        iapm.base.echo("IAPM config file is not found.", 1, color, printlevel)
         
     # Check what user want to do. 
     for args in sys.argv[1:]:
@@ -57,13 +59,15 @@ def main():
     # Finish initialization.
     #if "--sysroot=" in options:
     #    rootdir = options[options.index("--sysroot=")+1] # This pieces of shit is fucked up.
+    if "--debug" in options:
+        printlevel = 1
     if "--verbose" in options:
-        verbose = True
+        printlevel = 2
     if "--test" in options:
         test = True
-        iapm.base.echo("You are running IAPM in test mode.", 3)
-        iapm.base.echo("We will assume that this IAPM is in its src.", 3)
-        iapm.base.echo("Check ~/.iapm/fakeroot", 3)
+        iapm.base.echo("You are running IAPM in test mode.", 3, color, printlevel)
+        iapm.base.echo("We will assume that this IAPM is in its src.", 3, color, printlevel)
+        iapm.base.echo("Check ~/.iapm/fakeroot", 3, color, printlevel)
         os.system("mkdir -p ~/.iapm/fakeroot")
         rootdir = "~/.iapm/fakeroot"
         
@@ -73,52 +77,57 @@ def main():
     permissiveActions = ["install", "reinstall", "update", "upgrade", "remove", "clean", "autoremove"]
 
     # (Testing) list results.
-    if verbose:
-        iapm.base.echo(f"Dictionary Settings: {rootdir}", 5)
-        iapm.base.echo(f"  ROOTDIR: {rootdir}", 5)
-        iapm.base.echo(f"  DBDIR: {dbdir} ({rootdir}/{dbdir})", 5)
-        iapm.base.echo(f"  CACHEDIR: {cachedir} ({rootdir}/{cachedir})", 5)
-        iapm.base.echo(f"  LOGFILE: {logfile} ({rootdir}/{logfile})", 5)
-        iapm.base.echo(f"  LOCKFILE: {lockfile} ({rootdir}/{lockfile})", 5)
-        iapm.base.echo(f"  GPGDIR: {gpgdir} ({rootdir}/{gpgdir})", 5)
-        iapm.base.echo(f"  Verbose: {verbose}", 5)
-        iapm.base.echo(f"  Color: {color}", 5)
-        iapm.base.echo(f"  Action: {action}", 5)
-        iapm.base.echo(f"  Targets: {targets}", 5)
-        iapm.base.echo(f"  Options: {options}", 5)
-        iapm.base.echo("Initialization completed.", 5)
-        print()
+    iapm.base.echo(f"Dictionary Settings: {rootdir}", 5, color, printlevel)
+    iapm.base.echo(f"  ROOTDIR: {rootdir}", 5, color, printlevel)
+    iapm.base.echo(f"  DBDIR: {dbdir} ({rootdir}/{dbdir})", 5, color, printlevel)
+    iapm.base.echo(f"  CACHEDIR: {cachedir} ({rootdir}/{cachedir})", 5, color, printlevel)
+    iapm.base.echo(f"  LOGFILE: {logfile} ({rootdir}/{logfile})", 5, color, printlevel)
+    iapm.base.echo(f"  LOCKFILE: {lockfile} ({rootdir}/{lockfile})", 5, color, printlevel)
+    iapm.base.echo(f"  GPGDIR: {gpgdir} ({rootdir}/{gpgdir})", 5, color, printlevel)
+    iapm.base.echo(f"  Verbose: {verbose}", 5, color, printlevel)
+    iapm.base.echo(f"  Color: {color}", 5, color, printlevel)
+    iapm.base.echo(f"  Action: {action}", 5, color, printlevel)
+    iapm.base.echo(f"  Targets: {targets}", 5, color, printlevel)
+    iapm.base.echo(f"  Options: {options}", 5, color, printlevel)
+    iapm.base.echo("Initialization completed.", 5, color, printlevel)
+    iapm.base.echo("", 5, color, printlevel)
 
     # Start IAPM main program.(Preparing)
     
     # Check Permissions and if the action is valid.
     if action == None:
-        iapm.base.echo("No action specified.", 1)
+        iapm.base.echo("No action specified.", 1, color, printlevel)
         sys.exit(1)
     
     if action not in availActions:
-        iapm.base.echo(f"Action '{action}' is not available.", 1)
+        iapm.base.echo(f"Action '{action}' is not available.", 1, color, printlevel)
         sys.exit(1)
     
     if action in betaActions:
-        iapm.base.echo(f"Action '{action}' is testing.", 2)
+        iapm.base.echo(f"Action '{action}' is testing.", 2, color, printlevel)
     
     isroot = os.geteuid() == 0
     if action in permissiveActions and not isroot and not test:
-        iapm.base.echo(f"Action '{action}' needs root permissions. did you run as root?", 1)
+        iapm.base.echo(f"Action '{action}' needs root permissions. did you run as root?", 1, color, printlevel)
         sys.exit(1)
     if test and isroot:
-        iapm.base.echo(f"Never test IAPM with root permissions, this may break your system badly.", 1)
+        iapm.base.echo(f"Never test IAPM with root permissions, this may break your system badly.", 1, color, printlevel)
         sys.exit(1)
     
     # Make dependency list.(if action:install)
     if action == "install":
         packages = iapm.extra.addDeps(targets, dbdir)
     
+    # Do the thing.
+    if action == "version":
+        result = iapm.version()
+
+    # End
+    return result
 
 if __name__ == "__main__":
     try:
-        main()
+        sys.exit(main())
     except KeyboardInterrupt:
         iapm.base.echo("Interrupted by user. Exiting...", 1)
         sys.exit(1)

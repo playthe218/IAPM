@@ -23,16 +23,16 @@ Here are the completed and unfinished features: <br>
 * [x] Reworked: Configuration file handling
 * [ ] Reworked: Parameter handling
 * [ ] Dependency resolution
-* [ ] action: Install, action: Update, action: Remove
+* [ ] action:instll, action:update/upgrade, action:remove
 
 ### To release the stable version...
 
-* [ ] action: Help
+* [ ] action:help
 * [ ] Key and package verification
 
 ### To make it more usable...
 
-* [ ] action: Search, action: Information query
+* [ ] action:search, action:info, action:autoremove
 * [ ] Clean cache items, auto-remove
 * [ ] Very complex advanced dependency resolution system
 
