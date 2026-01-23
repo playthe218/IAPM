@@ -6,7 +6,7 @@
 IAPM 是一个开发中的软件包管理器 (还未完成!)
 
 ## 依赖 ##
-如果你有一个基本可用的操作系统，那么，Python、Tar 是目前的依赖项。 <br>
+如果你有一个基本可用的 Linux 发行版，那么，`Python`、`Tar` 是目前的依赖项。 <br>
 随着未来的功能更新，预计还会加入的依赖项如下： <br>
 * GnuPG (签名、验证软件包)
 
@@ -18,14 +18,14 @@ IAPM 是一个开发中的软件包管理器 (还未完成!)
 * [X] 重做:配置文件处理
 * [ ] 重做:参数处理
 * [ ] 依赖解析
-* [ ] action:安装、action:更新、action:移除
+* [ ] action:install、action:update/upgrade、action:remove
 
 ### 要让它可以发布正式版... ###
-* [ ] action:帮助
+* [ ] action:help
 * [ ] 密钥与软件包验证
 
 ### 要让它变得好用... ###
-* [ ] action:搜索、action:信息查询、action:自动移除
+* [ ] action:search、action:info、action:autoremove
 * [ ] 清理缓存项、自动移除
 * [ ] 非常复杂的高级依赖解析系统
 
@@ -51,4 +51,4 @@ cd IAPM/src
 <del>否则天知道哪天实装了功能测试的时候不加上 `--test` 就可能给系统骨灰都扬了。</del><br>
 
 ## 许可证 ##
-IAPM 3.0 在 GPL-3.0 许可证下发布，详情请[查阅 LICENSE 文件](LICENSE)。
+IAPM 3.0 在 GPL-3.0-or-later 许可证下发布，详情请[查阅 LICENSE 文件](LICENSE)。

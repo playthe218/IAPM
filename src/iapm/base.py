@@ -25,7 +25,9 @@ def echo(msg, loglevel, color=False, level=0):
     # Adding colorful output and log file support in future.
     loglevels = ["Critical", "Error", "Warning", "Notice", "Normal", "Debug", "Verbose"]
     currentTime = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    currentTimeVerbose = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + f".{int(time.time() * 1000) % 1000:03d}"
     fullmsg = f"[{currentTime}][{loglevels[loglevel]}]{msg}"
+    fullmsgVerbose = f"[{currentTimeVerbose}][{loglevels[loglevel]}]{msg}"
     if loglevel == 4:
         viewmsg = f"{msg}"
     else:
@@ -47,9 +49,9 @@ def echo(msg, loglevel, color=False, level=0):
 
     if loglevel <= 4 and level == 0:
         print(viewmsg)
-    elif level >= 1 and loglevel != 6:
-        print(fullmsg)
     elif level == 2:
+        print(fullmsgVerbose)
+    elif level >= 1 and loglevel != 6:
         print(fullmsg)
 
 def readconfig(file, target, fallback=None):

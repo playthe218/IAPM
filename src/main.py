@@ -13,7 +13,6 @@ import time
 import os
 import signal
 import gettext
-import configparser
 import iapm
 
 
@@ -116,7 +115,8 @@ def main():
     
     # Make dependency list.(if action:install)
     if action == "install":
-        packages = iapm.extra.addDeps(targets, dbdir)
+        packages = iapm.extra.addDeps(targets, rootdir, dbdir)
+        
     
     # Do the thing.
     if action == "version":

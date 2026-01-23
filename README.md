@@ -8,7 +8,7 @@ IAPM is a package manager under development (not yet completed!)
 
 ## Dependencies
 
-If you have a basically usable operating system, then Python and Tar are the current dependencies. <br>
+If you have a basically usable Linux distribution, then `Python` and `Tar` are the current dependencies. <br>
 With future feature updates, the following dependencies are expected to be added: <br>
 
 * GnuPG (for signing and verifying packages)
@@ -36,7 +36,7 @@ Here are the completed and unfinished features: <br>
 * [ ] Clean cache items, auto-remove
 * [ ] Very complex advanced dependency resolution system
 
-## Quick Start
+## Quick Start ##
 
 Although it's not finished yet, you can try the following steps: <br>
 
@@ -62,4 +62,4 @@ cd IAPM/src
 
 ## License
 
-IAPM 3.0 is released under the GPL-3.0 license. For more details, please [refer to the LICENSE file](LICENSE).
+IAPM 3.0 is released under the GPL-3.0-or-later license. For more details, please [refer to the LICENSE file](LICENSE).
