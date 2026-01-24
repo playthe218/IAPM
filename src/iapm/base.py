@@ -12,7 +12,7 @@ def echo(msg, loglevel, color=False, level=0):
     # Level = 0 - Normal 1 - Debug 2 - Verbose
     
     # Here is a log level list:
-    # 0: Critical/Fatal 1: Error 2: Warning 3: Notice 4: Normal 5: Debug 6: Verbose
+    # 0: Critical 1: Error 2: Warning 3: Notice 4: Normal 5: Debug 6: Verbose
     
     # An Error, or even worse, always can stop a operation.
 

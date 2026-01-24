@@ -18,7 +18,7 @@ IAPM/                       # Sometimes referred to as "SRC://".
 |-src/
 | |-iapm/                   # IAPM built-in modules.
 | | |-__init__.py
-| | |-action.py             # Contains all IAPM actions.
+| | |-*.py                  # actions of IAPM.
 | | |-base.py               # Basic internal functionalities of IAPM.
 | | |-extra.py              # Advanced internal functionalities of IAPM.
 | |-main.py                 # IAPM main program.
@@ -117,11 +117,22 @@ In general, these checks are not strictly required, but completing them yourself
 * `iapm --test --debug xxx`: `--test` will **skip root permission checks** and **create a fake root directory at `~/.iapm/fakeroot/`**. `--debug` will **show the level of most log information** and **display the time these messages were generated**.
 * `iapm --test --verbose xxx`: `--test` behaves the same. `--verbose` will increase the precision of the time points displayed in `--debug` from seconds to **milliseconds**. If your changes improve performance, you can use this command to compare the original and your optimized results, showcasing your improvement.
 
+### Procrastination ###
+
+Caught halfway through coding and suddenly want to slack off? I get it, I’m lazy too. IAPM started as a project for me to learn Python. <br>
+Although I don’t recommend submitting unfinished work, if you find yourself unable to continue for any reason (be it school, work, or just because you’re too tired to code and want to go play games): <br>
+1. Take a quick look at the code to ensure that even if you don’t maintain it in the future, it’s easy for other contributors to take over.
+2. Add a comment in the unfinished code, something like I did: `# PLAYTHE218!!! Look your mess!!!.`
+3. When submitting the PR, make sure to note which file contains your unfinished work.
+
+Note that if the unfinished code you’re submitting is for performance optimization, bug fixes, or other similar changes, **don’t submit it**. After all, no one wants to see a feature that was almost working but was still fine, only to break after this PR. If you must submit, append `-undone` to the related files.
+
+
 ### Common Reasons for PR Rejection
 
 Here are some common reasons PRs may be rejected. Please avoid these situations:
 
-1. **“Well-meaning” formatting**: Just running `black` on the code and submitting a PR with no other functional, bug-fixing, or optimization-related changes.
+1. **“Well-meaning” formatting**: Just `black` the code and submitting a PR with no other functional, bug-fixing, or optimization-related changes.
 2. **Excessive optimization**: Attempting to improve performance or reduce code size (even if it's just removing a single newline) while severely neglecting readability; in the worst cases, such over-optimizations may lead to unreadable code without achieving any performance gains:
 
    ```python
@@ -134,9 +145,9 @@ Here are some common reasons PRs may be rejected. Please avoid these situations:
    ```python
    for x in range(1, 10): print(" ".join([str(y)+"x"+str(x)+"="+str(x*y) for y in range(1, x+1)]))
    ```
-3. **Importing 100 packages**: Importing a large number of Python packages, including those that are not necessary and typically would not be installed in even the most minimal Linux installations.
-4. **Unnecessary features**: Adding features that clearly don't belong in a package manager, such as calling ChatGPT, DeepSeek, or other AI APIs.
-5. **Malicious code submissions**: Please do not submit PRs containing malicious code, such as mining programs or anything that could compromise the security of the repository. Any such submission will be immediately rejected.
+3. **I imported 100 packages**: Importing a large number of Python packages, including those that are not necessary and typically would not be installed in even the most minimal Linux installations.
+4. **Unnecessary features**: Adding features that clearly don't belong in a package manager, such as calling ChatGPT, Gemini, Ollama(Seriously???), this AI and that AI APIs.
+5. **Malicious code submissions**: Please do not submit PRs containing malicious code, such as mining programs or anything that could compromise the security of the repository. Any such submission will be immediately rejected and reported.
 
 If we encounter more typical issues or common mistakes in PRs, this section will be updated accordingly.
 

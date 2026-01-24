@@ -5,5 +5,10 @@
 
 def addDeps(targets, rootdir, dbdir):
     print(rootdir+"/"+dbdir)
+    # PLAYTHE218!!! Look your mess!!!
     
     return targets
+
+def resolveRepos(rootdir, reposFile):
+    # PLAYTHE218!!! Look your mess!!!
+    return 0

@@ -9,17 +9,25 @@
 # IAPM will handle these following dictories settings like this: The finnal DataBase Dir it use is $ROOTDIR/$DBDIR instead of $DBDIR.
 
 import sys
-import time
 import os
-import signal
 import gettext
 import iapm
 
 
+gettext.bindtextdomain("iapm", "/usr/share/locale")
+gettext.textdomain("iapm")
+
+_ = gettext.gettext
+
+
 def main():
     color = False
+    verbose = False
+    
     # NEVER change it unless testing.
     configfile = "/etc/iapm/iapm.conf"
+    repofile = "/etc/iapm/repos.conf"
+    
     test = False
     printlevel = 0
 
@@ -28,19 +36,20 @@ def main():
     options = []
 
     # Set configurations, according to /etc/iapm/iapm.conf, and provide fallback if need.
-    try:
-        rootdir = iapm.base.readconfig(configfile, "GENERAL:ROOTDIR", "/")
-        dbdir = iapm.base.readconfig(configfile, "GENERAL:DBDIR", "/var/lib/iapm/")
-        cachedir = iapm.base.readconfig(configfile, "GENERAL:CACHEDIR", "/var/cache/iapm/")
-        logfile = iapm.base.readconfig(configfile, "GENERAL:LOGFILE", "/var/log/iapm.log")
-        lockfile = iapm.base.readconfig(configfile, "GENERAL:LOCKFILE", "/var/lib/iapm/iapm.lock")
-        gpgdir = iapm.base.readconfig(configfile, "GENERAL:GPGDIR", "/etc/iapm/gpg/")
-        verbose = iapm.base.readconfig(configfile, "MISCS:Color", False)
-        color = iapm.base.readconfig(configfile, "MISCS:Color", True)
-    except FileNotFoundError:
-        iapm.base.echo("IAPM config file is not found.", 1, color, printlevel)
-        
-    # Check what user want to do. 
+    rootdir = iapm.base.readconfig(configfile, "GENERAL:ROOTDIR", "/")
+    dbdir = iapm.base.readconfig(configfile, "GENERAL:DBDIR", "/var/lib/iapm/")
+    cachedir = iapm.base.readconfig(configfile, "GENERAL:CACHEDIR", "/var/cache/iapm/")
+    logfile = iapm.base.readconfig(configfile, "GENERAL:LOGFILE", "/var/log/iapm.log")
+    lockfile = iapm.base.readconfig(configfile, "GENERAL:LOCKFILE", "/var/lib/iapm/iapm.lock")
+    gpgdir = iapm.base.readconfig(configfile, "GENERAL:GPGDIR", "/etc/iapm/gpg/")
+    verbose = iapm.base.readconfig(configfile, "MISCS:Color", False)
+    color = iapm.base.readconfig(configfile, "MISCS:Color", True)
+    
+    # That's act first ⬆ and report later ⬇ ;)
+    if not os.path.exists(configfile):
+        iapm.base.echo("IAPM config file is not found.", 2, color, printlevel)
+
+    # Check what user want to do.
     for args in sys.argv[1:]:
         if args.startswith("--") or args.startswith("-"):
             continue
@@ -54,13 +63,13 @@ def main():
             options.append(arg)
         else:
             targets.append(arg)
-    
+
     # Finish initialization.
-    #if "--sysroot=" in options:
+    # if "--sysroot=" in options:
     #    rootdir = options[options.index("--sysroot=")+1] # This pieces of shit is fucked up.
     if "--debug" in options:
         printlevel = 1
-    if "--verbose" in options:
+    if ("--verbose" in options) or verbose:
         printlevel = 2
     if "--test" in options:
         test = True
@@ -69,11 +78,30 @@ def main():
         iapm.base.echo("Check ~/.iapm/fakeroot", 3, color, printlevel)
         os.system("mkdir -p ~/.iapm/fakeroot")
         rootdir = "~/.iapm/fakeroot"
-        
 
-    availActions = ["install", "reinstall", "update", "upgrade", "remove", "clean", "autoremove", "version", "search", "info", "help"]
-    betaActions = ["autoremove", "search", "info"]  
-    permissiveActions = ["install", "reinstall", "update", "upgrade", "remove", "clean", "autoremove"]
+    availActions = [
+        "install",
+        "reinstall",
+        "update",
+        "upgrade",
+        "remove",
+        "clean",
+        "autoremove",
+        "version",
+        "search",
+        "info",
+        "help",
+    ]
+    betaActions = ["autoremove", "search", "info"]
+    permissiveActions = [
+        "install",
+        "reinstall",
+        "update",
+        "upgrade",
+        "remove",
+        "clean",
+        "autoremove",
+    ]
 
     # (Testing) list results.
     iapm.base.echo(f"Dictionary Settings: {rootdir}", 5, color, printlevel)
@@ -92,19 +120,19 @@ def main():
     iapm.base.echo("", 5, color, printlevel)
 
     # Start IAPM main program.(Preparing)
-    
+
     # Check Permissions and if the action is valid.
     if action == None:
         iapm.base.echo("No action specified.", 1, color, printlevel)
         sys.exit(1)
-    
+
     if action not in availActions:
         iapm.base.echo(f"Action '{action}' is not available.", 1, color, printlevel)
         sys.exit(1)
-    
+
     if action in betaActions:
         iapm.base.echo(f"Action '{action}' is testing.", 2, color, printlevel)
-    
+
     isroot = os.geteuid() == 0
     if action in permissiveActions and not isroot and not test:
         iapm.base.echo(f"Action '{action}' needs root permissions. did you run as root?", 1, color, printlevel)
@@ -112,18 +140,17 @@ def main():
     if test and isroot:
         iapm.base.echo(f"Never test IAPM with root permissions, this may break your system badly.", 1, color, printlevel)
         sys.exit(1)
-    
-    # Make dependency list.(if action:install)
-    if action == "install":
-        packages = iapm.extra.addDeps(targets, rootdir, dbdir)
-        
-    
+
     # Do the thing.
     if action == "version":
         result = iapm.version()
-
+    if action == "install":
+        reposlist = iapm.extra.getReposList(rootdir)
+        packages = iapm.extra.addDeps(targets, rootdir, dbdir)
+        result = iapm.install(packages, targets, rootdir, dbdir, cachedir, gpgdir, reposlist, color, printlevel)
     # End
     return result
+
 
 if __name__ == "__main__":
     try:
