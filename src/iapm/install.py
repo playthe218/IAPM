@@ -7,3 +7,4 @@ def main(packages, targets, rootdir, dbdir, cachedir, gpgdir, reposList, color, 
     # packages: list of packages to install, including targeted pacakges and their dependencies.
     # targets: targeted packages.
     print("These folloing packages will be installed:")
+    print("Name                 Version                 Arch                Repo                Size")

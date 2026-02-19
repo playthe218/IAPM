@@ -14,6 +14,7 @@ import gettext
 import iapm
 
 
+# Prepare for i18n support.
 gettext.bindtextdomain("iapm", "/usr/share/locale")
 gettext.textdomain("iapm")
 
@@ -144,6 +145,8 @@ def main():
     # Do the thing.
     if action == "version":
         result = iapm.version()
+    if action == "help":
+        result = iapm.help()
     if action == "install":
         reposlist = iapm.extra.getReposList(rootdir)
         packages = iapm.extra.addDeps(targets, rootdir, dbdir)
