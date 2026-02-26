@@ -12,3 +12,6 @@ def addDeps(targets, rootdir, dbdir):
 def resolveRepos(rootdir, reposFile):
     # PLAYTHE218!!! Look your mess!!!
     return 0
+
+def transactionStagesGet(rootdir):
+    return 0

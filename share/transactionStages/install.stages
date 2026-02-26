@@ -1,0 +1,5 @@
+downloads(packages_summary, repos_summary, rootdir, cachedir, dl_backend)
+verify(packages_summary, rootdir, cachedir, gpgdir)
+scripts("pre", "install")
+update("install", rootdir, cachedir, dbdir)
+scripts("post", "install")

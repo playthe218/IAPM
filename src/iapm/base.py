@@ -60,4 +60,17 @@ def readconfig(file, target, fallback=None):
     
     section, option = target.split(":")
     return config.get(section, option, fallback=fallback)
+
+def packSysSummary(
+    rootdir, 
+    dbdir, 
+    cachedir, 
+    logfile, 
+    lockfile, 
+    gpgdir, 
+    color, 
+    printlevel, 
+    test
+    ):
     
+    return locals().copy()

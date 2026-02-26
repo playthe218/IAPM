@@ -104,7 +104,7 @@ def main():
         "autoremove",
     ]
 
-    # (Testing) list results.
+    # list results if wanted.
     iapm.base.echo(f"Dictionary Settings: {rootdir}", 5, color, printlevel)
     iapm.base.echo(f"  ROOTDIR: {rootdir}", 5, color, printlevel)
     iapm.base.echo(f"  DBDIR: {dbdir} ({rootdir}/{dbdir})", 5, color, printlevel)
@@ -117,6 +117,18 @@ def main():
     iapm.base.echo(f"  Action: {action}", 5, color, printlevel)
     iapm.base.echo(f"  Targets: {targets}", 5, color, printlevel)
     iapm.base.echo(f"  Options: {options}", 5, color, printlevel)
+    iapm.base.echo("Packaging System Summary...", 5, color, printlevel)
+    os_summary = iapm.base.packSysSummary(
+        rootdir, 
+        dbdir, 
+        cachedir, 
+        logfile, 
+        lockfile, 
+        gpgdir,
+        color,
+        printlevel,
+        test
+        )
     iapm.base.echo("Initialization completed.", 5, color, printlevel)
     iapm.base.echo("", 5, color, printlevel)
 
@@ -148,9 +160,9 @@ def main():
     if action == "help":
         result = iapm.help()
     if action == "install":
-        reposlist = iapm.extra.getReposList(rootdir)
+        # reposlist = iapm.extra.getReposList(rootdir)
         packages = iapm.extra.addDeps(targets, rootdir, dbdir)
-        result = iapm.install(packages, targets, rootdir, dbdir, cachedir, gpgdir, reposlist, color, printlevel)
+        result = iapm.install(packages, targets, os_summary, "Fuckyou")
     # End
     return result
 

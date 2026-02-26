@@ -1,7 +1,7 @@
 name = "example"
 version_view = "1.0.1r1"
 version_check = 001000001001
-description = "This is an IAPM package example."
+description = "This is an example IAPM package."
 provide = "example"
 arch = "amd64"
 buildtime = 1755595897
