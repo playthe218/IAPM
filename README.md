@@ -8,7 +8,7 @@ IAPM is a package manager under development (not yet completed!)
 
 ## Dependencies
 
-If you have a basically usable Linux distribution, then `Python` and `Tar` are the current dependencies. <br>
+If you have a basically usable Linux distribution, then `Python`, `Curl` and `Tar` are the current dependencies. <br>
 With future feature updates, the following dependencies are expected to be added: <br>
 
 * GnuPG (for signing and verifying packages)

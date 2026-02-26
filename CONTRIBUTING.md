@@ -11,8 +11,14 @@ We appreciate the contributions from anyone who would like to contribute to IAPM
 ```
 IAPM/                       # Sometimes referred to as "SRC://".
 |-share/
-| |-exampleRepo             # Example repository.
-| | |-os.repo               # Example: Software repository for an operating system.
+| |-exampleRepo/            # Example repository.
+| | |-os.repo               # Example: Software repository 
+| | |-iapm-example/         # Example: Package Category
+| | | |-example/            # Example Package
+| | | | |-1.0.1r1.info      # Example Package v1.0.1r1 Info
+| |-transactionStages       # Stages for transaction
+| | |-install.stages        # (May be all)Stages for action:install (developing)
+| | |-stages.descriptions.py    # All Stages for everythings (developing)
 | |-iapm.conf               # IAPM main program configuration file.
 | |-repos.conf              # IAPM repository configuration file.
 |-src/
