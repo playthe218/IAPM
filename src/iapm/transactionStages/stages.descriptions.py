@@ -1,7 +1,6 @@
 def downloads(packages_summary, repos_summary, rootdir, cachedir, dl_backend):
     # We are trying to use subprocess instead of os.system
     import subprocess
-    import os
     print("Downloading packages.")
     
     # things are all messed, mess mess mess mess
@@ -21,12 +20,31 @@ def downloads(packages_summary, repos_summary, rootdir, cachedir, dl_backend):
             url
             ]
         try:
+            #pass
             subprocess.run(how_to, check=True)
         except subprocess.CalledProcessError:
-            print("Downloading failed")
+            print("Failed to download package %s-%s." % (packages_summary[i]["name"], packages_summary[i]["version"]))
             return 1
     
-verify(packages_summary, rootdir, cachedir, gpgdir)
-scripts("pre", "install")
-update("install", rootdir, cachedir, dbdir)
-scripts("post", "install")
+# verify(packages_summary, rootdir, cachedir, gpgdir)
+def unpack(packages_summary, rootdir, cachedir):
+    import subprocess
+    print("Unpacking packages")
+    
+    for i in range(len(packages_summary)):
+        how_to = [
+            "tar",
+            "-xf" ,
+            "%s/%s/%s" % (rootdir, cachedir, packages_summary[i]["which"]),
+            "-C",
+            "%s/%s" % (rootdir, cachedir)
+            ]
+        try:
+            subprocess.run(how_to, check=True)
+        except subprocess.CalledProcessError:
+            print("Failed to unpack package %s-%s." % (packages_summary[i]["name"], packages_summary[i]["version"]))
+            return 1
+
+# scripts("pre", "install")
+# update("install", rootdir, cachedir, dbdir)
+# scripts("post", "install")
