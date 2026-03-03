@@ -151,7 +151,7 @@ Here are some common reasons PRs may be rejected. Please avoid these situations:
    ```python
    for x in range(1, 10): print(" ".join([str(y)+"x"+str(x)+"="+str(x*y) for y in range(1, x+1)]))
    ```
-3. **I imported 100 packages**: Importing a large number of Python packages, including those that are not necessary and typically would not be installed in even the most minimal Linux installations.
+3. **I imported 100 packages**: Importing a large number of Python packages, including those that are not necessary and minimal would not be installed in even the most typical Linux installations.
 4. **Unnecessary features**: Adding features that clearly don't belong in a package manager, such as calling ChatGPT, Gemini, Ollama(Seriously???), this AI and that AI APIs.
 5. **Malicious code submissions**: Please do not submit PRs containing malicious code, such as mining programs or anything that could compromise the security of the repository. Any such submission will be immediately rejected and reported.
 

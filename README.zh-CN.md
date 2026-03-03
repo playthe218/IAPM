@@ -21,7 +21,7 @@ IAPM 是一个开发中的软件包管理器 (还未完成!)
 * [ ] action:install、action:update/upgrade、action:remove
 
 ### 要让它可以发布正式版... ###
-* [ ] action:help
+* [x] action:help
 * [ ] 密钥与软件包验证
 
 ### 要让它变得好用... ###

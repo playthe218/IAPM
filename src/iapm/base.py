@@ -5,7 +5,6 @@
 
 import configparser
 import time
-import os
 
 
 def echo(msg, loglevel, color=False, level=0):

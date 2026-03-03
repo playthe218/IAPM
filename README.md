@@ -27,7 +27,7 @@ Here are the completed and unfinished features: <br>
 
 ### To release the stable version...
 
-* [ ] action:help
+* [x] action:help
 * [ ] Key and package verification
 
 ### To make it more usable...

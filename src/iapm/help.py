@@ -3,6 +3,8 @@
 
 # The IAPM action:help.
 
+# Many thing action:help shows is not finished, but it can describe that what we want to make.
+
 def main():
     print("Usage:")
     print("     iapm [options] <action> ...")
@@ -13,6 +15,8 @@ def main():
     print("     remove                  Remove  packages")
     print("     reinstall               Reinstall packages")
     print("     autoremove              Remove all unused dependency packages")
+    print("     help                    Show this help and exit")
+    print("     version                 Show IAPM version and exit")
     
     print("General options:")
     print("     --debug                 Enable IAPM debug mode")

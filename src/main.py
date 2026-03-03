@@ -78,7 +78,7 @@ def main():
         iapm.base.echo("We will assume that this IAPM is in its src.", 3, color, printlevel)
         iapm.base.echo("Check ~/.iapm/fakeroot", 3, color, printlevel)
         os.system("mkdir -p ~/.iapm/fakeroot")
-        rootdir = "~/.iapm/fakeroot"
+        rootdir = os.path.expanduser("~/.iapm/fakeroot")
 
     availActions = [
         "install",
@@ -132,7 +132,8 @@ def main():
     iapm.base.echo("Initialization completed.", 5, color, printlevel)
     iapm.base.echo("", 5, color, printlevel)
 
-    # Start IAPM main program.(Preparing)
+    # last: Init IAPM main program.
+    result = None
 
     # Check Permissions and if the action is valid.
     if action == None:
@@ -162,8 +163,24 @@ def main():
     if action == "install":
         # reposlist = iapm.extra.getReposList(rootdir)
         packages = iapm.extra.addDeps(targets, rootdir, dbdir)
-        result = iapm.install(packages, targets, os_summary, "Fuckyou")
+        result = iapm.install(packages, targets, os_summary, "")
+
+    # Please uncommit them when it finished ;)
+    # if action in ['update', 'upgrade']:
+        # Something else
+        # result = iapm.update()
+    # if action == "remove":
+        # result = iapm.remove()
+    # if action == "reinstall":
+        # result = iapm.reinstall()
+    # if action == "autoremove":
+        # result = iapm.autoremove()
+
     # End
+    if result is None:
+        iapm.base.echo("All stages finished but no result to return!", 1, color, printlevel)
+        iapm.base.echo("You should report this to IAPM Developer!", 1, color, printlevel)
+        return 1
     return result
 
 
