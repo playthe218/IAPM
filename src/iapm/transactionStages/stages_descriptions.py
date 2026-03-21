@@ -69,5 +69,5 @@ def scripts(package_summary, status, action, rootdir, cachedir):
                         print("Failed to run scripts (%s-%s, %s %s)" % (package_summary[i]["name"], package_summary[i]["version"], status, action))
                         return 1
         
-# update("install", rootdir, cachedir, dbdir)
-# scripts("post", "install")
+def update(action, rootdir, cachedir, dbdir):
+    import subprocess
