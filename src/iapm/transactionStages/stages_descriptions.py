@@ -71,3 +71,9 @@ def scripts(package_summary, status, action, rootdir, cachedir):
         
 def update(action, rootdir, cachedir, dbdir):
     import subprocess
+    if action == "install":
+        # matter is how to save permission
+        how_to = ['']
+        
+def clean(rootdir, cachedir):
+    print("Cleaning up")

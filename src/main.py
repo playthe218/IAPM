@@ -12,6 +12,7 @@ import sys
 import os
 import gettext
 import iapm
+#import 
 
 
 # Prepare for i18n support.
@@ -79,6 +80,10 @@ def main():
         iapm.base.echo("Check ~/.iapm/fakeroot", 3, color, printlevel)
         os.system("mkdir -p ~/.iapm/fakeroot")
         rootdir = os.path.expanduser("~/.iapm/fakeroot")
+    if "--nodeps" in options:
+        BypassDependencyResolve = True
+        iapm.base.echo("Dependency Resolving&Checking is skipped.", 2, color, printlevel)
+        iapm.base.echo("Make sure you know what you are doing.", 2, color, printlevel)
 
     availActions = [
         "install",
@@ -162,15 +167,25 @@ def main():
         result = iapm.help()
     if action == "install":
         # reposlist = iapm.extra.getReposList(rootdir)
-        packages = iapm.extra.addDeps(targets, rootdir, dbdir)
-        result = iapm.install(packages, targets, os_summary, "")
+        # repos_summary = 
+        if BypassDependencyResolve:
+            packages = targets
+        else:
+            try:
+                iapm.getdepends(targets, reposlist)
+            except:
+                iapm.base.echo("Failed to resolve dependency.", 1, color, printlevel)
+                return 1
+        result = iapm.install(packages_summary, targets, os_summary, "")
 
-    # Please uncommit them when it finished ;)
+    # Please uncommit them when it finished (or can be entered);)
     # if action in ['update', 'upgrade']:
         # Something else
         # result = iapm.update()
-    # if action == "remove":
-        # result = iapm.remove()
+    if action == "remove":
+        result = iapm.remove(packages, targets, os_summary, "")
+    if action == "clean":
+        result = iapm.clean(os_summary)
     # if action == "reinstall":
         # result = iapm.reinstall()
     # if action == "autoremove":
@@ -178,13 +193,17 @@ def main():
 
     # End
     if result is None:
-        iapm.base.echo("All stages finished but no result to return!", 1, color, printlevel)
+        iapm.base.echo("All stages finished (successfully?) but no result to return!", 1, color, printlevel)
         iapm.base.echo("You should report this to IAPM Developer!", 1, color, printlevel)
         return 1
     return result
 
 
 if __name__ == "__main__":
+    if os.name == "nt":
+        print("What the fuck are you doing?")
+        os.system('pause')
+        sys.exit(1)
     try:
         sys.exit(main())
     except KeyboardInterrupt:

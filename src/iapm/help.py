@@ -15,6 +15,7 @@ def main():
     print("     remove                  Remove  packages")
     print("     reinstall               Reinstall packages")
     print("     autoremove              Remove all unused dependency packages")
+    print("     clean                   Clean all cached files")
     print("     help                    Show this help and exit")
     print("     version                 Show IAPM version and exit")
     
