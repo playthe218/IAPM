@@ -1,0 +1,27 @@
+[example]
+provide="example"
+description="This is an example package provided by IAPM."
+version_view="1.0.1"
+version_check=001000001000
+version_override=0
+depends_fallback=["iapm"]
+required_depends=["iapm[003000000000]"]
+category="iapm-example"
+which="example-1.0.1-iapm-amd64.iap"
+arch="amd64"
+packager="playthe218"
+license="none"
+
+[iapm]
+provide="iapm"
+description="The IAPM Package Manager."
+version_view="3.0-dev"
+version_check=003000000000
+version_override=0
+depends_fallback=[]
+required_depends=[""]
+category="iapm"
+which="iapm-3.0-iapm-amd64.iap"
+arch="amd64"
+packager="playthe218"
+license="gpl-3-or-later"
