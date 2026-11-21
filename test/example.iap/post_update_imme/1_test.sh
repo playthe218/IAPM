@@ -1,1 +1,0 @@
-echo "This is post update immediately script example, it should be the first."

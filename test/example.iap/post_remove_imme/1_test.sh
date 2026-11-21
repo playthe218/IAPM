@@ -1,1 +1,0 @@
-echo "This is post remove immediately script example, it should be the first."

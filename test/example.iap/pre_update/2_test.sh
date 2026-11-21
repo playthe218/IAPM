@@ -1,1 +1,0 @@
-echo "This is pre update script example, it should be the second."

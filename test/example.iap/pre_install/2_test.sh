@@ -1,1 +1,0 @@
-echo "This is pre install script example, it should be the second."

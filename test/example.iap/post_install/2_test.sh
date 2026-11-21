@@ -1,1 +1,0 @@
-echo "This is post install script example, it should be the second."
